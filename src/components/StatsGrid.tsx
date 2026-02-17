@@ -30,7 +30,7 @@ export function StatsGrid({ totalCount, users }: StatsGridProps) {
             <div className="p-8">
                 <StatCard
                     label="Total Repositories"
-                    value={totalRepos.toLocaleString()}
+                    value={totalRepos ? totalRepos.toLocaleString() : "-"}
                 />
             </div>
         </div>
