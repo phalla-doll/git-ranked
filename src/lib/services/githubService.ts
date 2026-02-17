@@ -427,7 +427,7 @@ export const searchUsersInLocation = cache(
 
         try {
             const q = `location:"${query}"`;
-            const fetchSize = 100;
+            const fetchSize = 50;
             const searchUrl = `${BASE_URL}/search/users?q=${encodeURIComponent(q)}&sort=${sort}&order=desc&per_page=${fetchSize}&page=${page}`;
 
             const searchRes = await fetch(searchUrl, { headers });
@@ -446,8 +446,8 @@ export const searchUsersInLocation = cache(
                         );
                     }
 
-                    const start = (page - 1) * 100;
-                    const paginatedMock = mockUsers.slice(start, start + 100);
+                    const start = (page - 1) * 50;
+                    const paginatedMock = mockUsers.slice(start, start + 50);
                     const result = {
                         users: paginatedMock,
                         total_count: mockUsers.length,
