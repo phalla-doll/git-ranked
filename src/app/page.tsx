@@ -26,12 +26,8 @@ import { type GitHubUserDetail, SortOption } from "@/types";
 
 function GitRankedClient() {
     const [location, setLocation] = useState("Cambodia");
-    const [apiKey, setApiKey] = useState(() => {
-        if (typeof window !== "undefined") {
-            return localStorage.getItem("gitranked_api_key") || "";
-        }
-        return "";
-    });
+    const [mounted, setMounted] = useState(false);
+    const [apiKey, setApiKey] = useState("");
     const [showKeyInput, setShowKeyInput] = useState(false);
     const [showToken, setShowToken] = useState(false);
     const [users, setUsers] = useState<GitHubUserDetail[]>([]);
@@ -51,6 +47,19 @@ function GitRankedClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showPromoModal, setShowPromoModal] = useState(false);
     const [isPending, startTransition] = useTransition();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (mounted && typeof window !== "undefined") {
+            const savedKey = localStorage.getItem("gitranked_api_key");
+            if (savedKey) {
+                setApiKey(savedKey);
+            }
+        }
+    }, [mounted]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -330,7 +339,7 @@ function GitRankedClient() {
                             <button
                                 type="button"
                                 onClick={() => setShowKeyInput(!showKeyInput)}
-                                className={`p-2 rounded-full transition-all ${apiKey ? "text-apple-blue bg-blue-50" : "text-gray-500 hover:bg-gray-100"}`}
+                                className={`p-2 rounded-full transition-all ${mounted && apiKey ? "text-apple-blue bg-blue-50" : "text-gray-500 hover:bg-gray-100"}`}
                                 title="API Settings"
                             >
                                 <HugeiconsIcon
