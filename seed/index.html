@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>GitRanked Cambodia - Developer Leaderboard</title>
+    <meta name="title" content="GitRanked Cambodia - Developer Leaderboard" />
+    <meta name="description" content="Discover the top GitHub developers in Cambodia and beyond. Rank by followers, contributions, and repositories in a modern, minimalist interface." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://git-ranked-cambodia.vercel.app/" />
+    <meta property="og:title" content="GitRanked Cambodia - Developer Leaderboard" />
+    <meta property="og:description" content="Discover the top GitHub developers in Cambodia and beyond. Rank by followers, contributions, and repositories in a modern, minimalist interface." />
+    <meta property="og:image" content="https://git-ranked-cambodia.vercel.app/gitranked-og-main.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://git-ranked-cambodia.vercel.app/" />
+    <meta name="twitter:title" content="GitRanked Cambodia - Developer Leaderboard" />
+    <meta name="twitter:description" content="Discover the top GitHub developers in Cambodia and beyond. Rank by followers, contributions, and repositories in a modern, minimalist interface." />
+    <meta name="twitter:image" content="https://git-ranked-cambodia.vercel.app/gitranked-og-main.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            },
+            colors: {
+              // Apple-style Minimal Palette
+              apple: {
+                bg: '#f5f5f7',       // Main background (light gray)
+                surface: '#ffffff',  // Card background (white)
+                border: '#d2d2d7',   // Border color
+                text: '#1d1d1f',     // Primary text (near black)
+                gray: '#86868b',     // Secondary text
+                blue: '#0071e3',     // Action color
+                blueHover: '#0077ED',
+              },
+            },
+            boxShadow: {
+              'soft': '0 4px 20px rgba(0, 0, 0, 0.03)',
+              'hover': '0 10px 40px rgba(0, 0, 0, 0.08)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #f5f5f7; 
+        color: #1d1d1f;
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+      }
+      
+      /* Hide scrollbar for clean look but allow scrolling */
+      .custom-scrollbar::-webkit-scrollbar {
+        height: 0px;
+        width: 0px;
+      }
+      
+      /* Glass effect helper */
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "recharts": "https://esm.sh/recharts@^3.7.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.564.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
