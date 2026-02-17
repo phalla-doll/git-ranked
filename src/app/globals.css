@@ -3,6 +3,12 @@
 :root {
     --background: #ffffff;
     --foreground: #171717;
+    --apple-bg: #f5f5f7;
+    --apple-surface: #ffffff;
+    --apple-text: #1d1d1f;
+    --apple-gray: #86868b;
+    --apple-blue: #0071e3;
+    --apple-blueHover: #0077ed;
 }
 
 @theme inline {
@@ -10,6 +16,10 @@
     --color-foreground: var(--foreground);
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
+    --color-apple-bg: var(--apple-bg);
+    --color-apple-text: var(--apple-text);
+    --color-apple-gray: var(--apple-gray);
+    --color-apple-blue: var(--apple-blue);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +32,38 @@
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Apple-style utilities */
+.glass-panel {
+    @apply bg-white/75 backdrop-blur-md border-b border-gray-200/5;
+}
+
+.shadow-soft {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.shadow-hover {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Animation utilities */
+@keyframes slide-in-top {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-in {
+    animation: slide-in-top 0.2s ease-out;
 }

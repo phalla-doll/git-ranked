@@ -10,9 +10,12 @@
         "format": "biome format --write"
     },
     "dependencies": {
+        "lru-cache": "^11.0.1",
+        "lucide-react": "^0.564.0",
         "next": "16.1.6",
         "react": "19.2.3",
-        "react-dom": "19.2.3"
+        "react-dom": "19.2.3",
+        "recharts": "^3.7.0"
     },
     "devDependencies": {
         "@biomejs/biome": "2.2.0",
