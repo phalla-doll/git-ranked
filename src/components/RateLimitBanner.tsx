@@ -23,7 +23,8 @@ export function RateLimitBanner({
                         strokeWidth={1.5}
                     />
                     <span className="text-xs font-medium text-orange-800">
-                        Rate limit reached. Showing cached data.
+                        API rate limit exceeded. Add a GitHub API key to
+                        continue.
                     </span>
                 </div>
                 <button

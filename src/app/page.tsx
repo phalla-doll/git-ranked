@@ -31,7 +31,7 @@ function GitRankedClient() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showPromoModal, setShowPromoModal] = useState(false);
     const [isPending, startTransition] = useTransition();
-    const inputWrapperRef = useRef<HTMLFormElement>(null);
+    const inputWrapperRef = useRef<HTMLDivElement>(null);
 
     const { apiKey, setApiKey, saveApiKey } = useApiKey();
     const { users, loading, error, totalCount, rateLimitHit, fetchUsers } =
