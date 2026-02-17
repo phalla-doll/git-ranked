@@ -1,10 +1,6 @@
 import { LRUCache } from "lru-cache";
 import { cache } from "react";
-import type {
-    GitHubUserDetail,
-    GitHubUserSummary,
-    SearchResponse,
-} from "@/types";
+import type { GitHubUserDetail, SearchResponse } from "@/types";
 import { SortOption } from "@/types";
 
 const BASE_URL = "https://api.github.com";
@@ -341,14 +337,14 @@ export const getUserByName = cache(
         };
 
         if (apiKey) {
-            headers["Authorization"] = `token ${apiKey}`;
+            headers.Authorization = `token ${apiKey}`;
 
             try {
                 const map = await fetchGraphQLUserDetails([username], apiKey);
                 if (map[username.toLowerCase()]) {
                     return map[username.toLowerCase()];
                 }
-            } catch (e) {
+            } catch (_e) {
                 console.warn(
                     "GraphQL single fetch failed, falling back to REST",
                 );
@@ -372,7 +368,7 @@ export const getUserByName = cache(
                     user.recent_activity_count =
                         calculateCommitsFromEvents(events);
                 }
-            } catch (e) {
+            } catch (_e) {
                 user.recent_activity_count = 0;
             }
 
@@ -391,7 +387,7 @@ export const getUserByName = cache(
                         );
                     }
                 }
-            } catch (e) {
+            } catch (_e) {
                 // Ignore star fetch errors
             }
 
@@ -426,7 +422,7 @@ export const searchUsersInLocation = cache(
         };
 
         if (apiKey) {
-            headers["Authorization"] = `token ${apiKey}`;
+            headers.Authorization = `token ${apiKey}`;
         }
 
         try {
@@ -497,7 +493,7 @@ export const searchUsersInLocation = cache(
                         );
                         if (!detailRes.ok) return null;
                         return (await detailRes.json()) as GitHubUserDetail;
-                    } catch (e) {
+                    } catch (_e) {
                         return null;
                     }
                 });

@@ -138,7 +138,7 @@ function GitRankedClient() {
         startTransition(() => {
             fetchUsers(location, 1);
         });
-    }, [fetchUsers, location, sortBy, apiKey]);
+    }, [fetchUsers, location]);
 
     useEffect(() => {
         if (page > 1) {

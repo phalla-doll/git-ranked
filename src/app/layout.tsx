@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+    metadataBase: new URL("https://git-ranked-cambodia.vercel.app/"),
     title: "GitRanked Cambodia - Developer Leaderboard",
     description:
         "Discover top GitHub developers in Cambodia and beyond. Rank by followers, contributions, and repositories in a modern, minimalist interface.",
