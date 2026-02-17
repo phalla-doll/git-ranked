@@ -492,9 +492,7 @@ function GitRankedClient() {
                         <StatCard
                             label={getTotalLabel()}
                             value={
-                                totalCount > 0
-                                    ? `${(totalCount / 1000).toFixed(1)}K+`
-                                    : totalCount || 0
+                                totalCount ? totalCount.toLocaleString() : "-"
                             }
                         />
                     </div>
