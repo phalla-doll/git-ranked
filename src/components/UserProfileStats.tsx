@@ -6,7 +6,7 @@ import {
     UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import type { GitHubUserDetail } from "@/types";
+import type { GitHubUserDetail, HugeIcon } from "@/types";
 import { SortOption } from "@/types";
 
 interface UserProfileStatsProps {
@@ -24,7 +24,7 @@ const StatBox = ({
 }: {
     label: string;
     value: string | number;
-    icon?: any;
+    icon?: HugeIcon;
     highlight?: boolean;
 }) => (
     <div

@@ -6,6 +6,28 @@ export interface GitHubUserSummary {
     score: number;
 }
 
+export interface GitHubEventPayload {
+    size?: number;
+}
+
+export interface GitHubEvent {
+    type: string;
+    payload?: GitHubEventPayload;
+}
+
+export interface GraphQLRepositoryNode {
+    stargazerCount?: number;
+}
+
+export interface GitHubRepository {
+    stargazers_count?: number;
+}
+
+export type HugeIcon = readonly (readonly [
+    string,
+    { readonly [key: string]: string | number },
+])[];
+
 export interface GitHubUserDetail {
     login: string;
     id: number;

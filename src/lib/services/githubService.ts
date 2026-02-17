@@ -1,6 +1,12 @@
 import { LRUCache } from "lru-cache";
 import { cache } from "react";
-import type { GitHubUserDetail, SearchResponse } from "@/types";
+import type {
+    GitHubEvent,
+    GitHubRepository,
+    GitHubUserDetail,
+    GraphQLRepositoryNode,
+    SearchResponse,
+} from "@/types";
 import { SortOption } from "@/types";
 
 const BASE_URL = "https://api.github.com";
@@ -198,9 +204,9 @@ const searchCache = new LRUCache<
     ttl: 5 * 60 * 1000,
 });
 
-const calculateCommitsFromEvents = (events: any[]): number => {
+const calculateCommitsFromEvents = (events: GitHubEvent[]): number => {
     if (!Array.isArray(events)) return 0;
-    return events.reduce((acc: number, event: any) => {
+    return events.reduce((acc: number, event: GitHubEvent) => {
         if (
             event &&
             typeof event === "object" &&
@@ -287,7 +293,7 @@ const fetchGraphQLUserDetails = async (
                     if (data) {
                         const totalStars =
                             data.repositories?.nodes?.reduce(
-                                (acc: number, repo: any) =>
+                                (acc: number, repo: GraphQLRepositoryNode) =>
                                     acc + (repo.stargazerCount || 0),
                                 0,
                             ) || 0;
@@ -381,7 +387,7 @@ export const getUserByName = cache(
                     const repos = await reposRes.json();
                     if (Array.isArray(repos)) {
                         user.total_stars = repos.reduce(
-                            (acc: number, repo: any) =>
+                            (acc: number, repo: GitHubRepository) =>
                                 acc + (repo.stargazers_count || 0),
                             0,
                         );
