@@ -1,13 +1,12 @@
 import {
-    Activity,
-    AlertTriangle,
-    Building,
-    ExternalLink,
-    MapPin,
-    Medal,
-    SearchX,
-    Trophy,
-} from "lucide-react";
+    Activity01Icon,
+    AlertDiamondIcon,
+    ArrowUpRight01Icon,
+    Award01Icon,
+    Medal01Icon,
+    Search01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import { memo } from "react";
 import type { GitHubUserDetail } from "@/types";
@@ -29,15 +28,35 @@ const RankBadge = ({ rank }: { rank: number }) => {
     if (rank === 1) {
         colorClass = "text-yellow-600 font-medium scale-110";
         icon = (
-            <Trophy size={16} className="text-yellow-500 fill-yellow-500/20" />
+            <HugeiconsIcon
+                icon={Award01Icon}
+                size={16}
+                color="#EAB308"
+                strokeWidth={1.5}
+                className="fill-yellow-500/20"
+            />
         );
     } else if (rank === 2) {
         colorClass = "text-gray-600 font-medium scale-105";
-        icon = <Medal size={16} className="text-gray-400 fill-gray-400/20" />;
+        icon = (
+            <HugeiconsIcon
+                icon={Medal01Icon}
+                size={16}
+                color="#9CA3AF"
+                strokeWidth={1.5}
+                className="fill-gray-400/20"
+            />
+        );
     } else if (rank === 3) {
         colorClass = "text-orange-700 font-medium scale-105";
         icon = (
-            <Medal size={16} className="text-orange-500 fill-orange-500/20" />
+            <HugeiconsIcon
+                icon={Medal01Icon}
+                size={16}
+                color="#F97316"
+                strokeWidth={1.5}
+                className="fill-orange-500/20"
+            />
         );
     }
 
@@ -64,7 +83,12 @@ export const LeaderboardTable = memo(
                 <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-[400px]">
                     <div className="flex flex-col items-center animate-pulse">
                         <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                            <Activity className="text-gray-400" size={20} />
+                            <HugeiconsIcon
+                                icon={Activity01Icon}
+                                size={20}
+                                color="currentColor"
+                                className="text-gray-400"
+                            />
                         </div>
                         <p className="text-apple-text font-medium text-lg">
                             Loading profiles...
@@ -81,7 +105,12 @@ export const LeaderboardTable = memo(
             return (
                 <div className="bg-white rounded-2xl border border-red-100 flex flex-col items-center justify-center min-h-[400px]">
                     <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
-                        <AlertTriangle className="text-red-500" size={20} />
+                        <HugeiconsIcon
+                            icon={AlertDiamondIcon}
+                            size={20}
+                            color="#EF4444"
+                            strokeWidth={1.5}
+                        />
                     </div>
                     <h3 className="text-apple-text font-medium text-lg">
                         Connection Issue
@@ -97,7 +126,13 @@ export const LeaderboardTable = memo(
             return (
                 <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-[400px]">
                     <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                        <SearchX size={32} className="text-gray-300" />
+                        <HugeiconsIcon
+                            icon={Search01Icon}
+                            size={32}
+                            color="currentColor"
+                            className="text-gray-300"
+                            strokeWidth={1.5}
+                        />
                     </div>
                     <h3 className="text-apple-text font-medium text-lg">
                         No Developers Found
@@ -243,7 +278,11 @@ export const LeaderboardTable = memo(
                                                 }
                                                 className="inline-flex p-2 text-gray-300 hover:text-apple-blue hover:bg-blue-50 rounded-full transition-colors opacity-0 group-hover:opacity-100"
                                             >
-                                                <ExternalLink size={16} />
+                                                <HugeiconsIcon
+                                                    icon={ArrowUpRight01Icon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                />
                                             </a>
                                         </td>
                                     </tr>

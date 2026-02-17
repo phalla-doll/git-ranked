@@ -1,5 +1,11 @@
-import { BookOpen, Calendar, Star, UserPlus, Users } from "lucide-react";
-import { useMemo } from "react";
+import {
+    BookOpen01Icon,
+    Calendar01Icon,
+    StarIcon,
+    UserAdd01Icon,
+    UserGroupIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
 
@@ -18,7 +24,7 @@ const StatBox = ({
 }: {
     label: string;
     value: string | number;
-    icon?: React.ElementType;
+    icon?: any;
     highlight?: boolean;
 }) => (
     <div
@@ -35,8 +41,11 @@ const StatBox = ({
         </span>
         <div className="flex items-center gap-1.5 mt-1.5">
             {Icon && (
-                <Icon
+                <HugeiconsIcon
+                    icon={Icon}
                     size={12}
+                    color={highlight ? "#2563EB" : "currentColor"}
+                    strokeWidth={1.5}
                     className={highlight ? "text-apple-blue" : "text-gray-400"}
                 />
             )}
@@ -64,20 +73,24 @@ export const UserProfileStats = ({
             <StatBox
                 label="Repos"
                 value={user.public_repos}
-                icon={BookOpen}
+                icon={BookOpen01Icon}
                 highlight={sortBy === SortOption.REPOS}
             />
             <StatBox
                 label="Followers"
                 value={user.followers}
-                icon={Users}
+                icon={UserGroupIcon}
                 highlight={sortBy === SortOption.FOLLOWERS}
             />
-            <StatBox label="Following" value={user.following} icon={UserPlus} />
+            <StatBox
+                label="Following"
+                value={user.following}
+                icon={UserAdd01Icon}
+            />
             <StatBox
                 label="Stars"
                 value={user.total_stars !== undefined ? user.total_stars : "-"}
-                icon={Star}
+                icon={StarIcon}
             />
             <StatBox
                 label="Contribs"
@@ -86,7 +99,7 @@ export const UserProfileStats = ({
                         ? user.recent_activity_count
                         : "-"
                 }
-                icon={Calendar}
+                icon={Calendar01Icon}
             />
         </div>
     );

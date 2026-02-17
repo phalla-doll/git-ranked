@@ -1,13 +1,13 @@
 import {
-    BarChart3,
-    Check,
-    ExternalLink,
-    Eye,
-    EyeOff,
-    Key,
-    X,
-    Zap,
-} from "lucide-react";
+    ArrowUpRight01Icon,
+    BarChartIcon,
+    Cancel01Icon,
+    CheckmarkCircle01Icon,
+    EyeIcon,
+    KeyIcon,
+    ZapIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 
 interface TokenPromoModalProps {
@@ -60,7 +60,12 @@ export const TokenPromoModal = ({
                             className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors z-20"
                             aria-label="Close"
                         >
-                            <X size={20} />
+                            <HugeiconsIcon
+                                icon={Cancel01Icon}
+                                size={20}
+                                color="currentColor"
+                                strokeWidth={1.5}
+                            />
                         </button>
 
                         <div className="p-8 pt-12">
@@ -78,7 +83,12 @@ export const TokenPromoModal = ({
                             <div className="bg-gray-50 rounded-2xl p-5 mb-8 space-y-3.5 border border-gray-100">
                                 <div className="flex items-center gap-3.5 text-sm text-gray-700 font-medium">
                                     <div className="p-1.5 bg-green-100 rounded-lg text-green-700 shadow-sm">
-                                        <BarChart3 size={16} />
+                                        <HugeiconsIcon
+                                            icon={BarChartIcon}
+                                            size={16}
+                                            color="#15803D"
+                                            strokeWidth={1.5}
+                                        />
                                     </div>
                                     <span>
                                         See real contribution calendar stats
@@ -86,7 +96,12 @@ export const TokenPromoModal = ({
                                 </div>
                                 <div className="flex items-center gap-3.5 text-sm text-gray-700 font-medium">
                                     <div className="p-1.5 bg-orange-100 rounded-lg text-orange-700 shadow-sm">
-                                        <Zap size={16} />
+                                        <HugeiconsIcon
+                                            icon={ZapIcon}
+                                            size={16}
+                                            color="#EA580C"
+                                            strokeWidth={1.5}
+                                        />
                                     </div>
                                     <span>
                                         Increase limits: 60 &rarr; 5,000 req/hr
@@ -97,9 +112,12 @@ export const TokenPromoModal = ({
                             <div className="space-y-4">
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Key
+                                        <HugeiconsIcon
+                                            icon={KeyIcon}
                                             size={16}
+                                            color="currentColor"
                                             className="text-gray-400"
+                                            strokeWidth={1.5}
                                         />
                                     </div>
                                     <input
@@ -116,11 +134,12 @@ export const TokenPromoModal = ({
                                         onClick={() => setShowToken(!showToken)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                                     >
-                                        {showToken ? (
-                                            <EyeOff size={16} />
-                                        ) : (
-                                            <Eye size={16} />
-                                        )}
+                                        <HugeiconsIcon
+                                            icon={EyeIcon}
+                                            size={16}
+                                            color="currentColor"
+                                            strokeWidth={showToken ? 3 : 1.5}
+                                        />
                                     </button>
                                 </div>
 
@@ -140,7 +159,12 @@ export const TokenPromoModal = ({
                                         className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-apple-blue transition-colors font-medium border-b border-transparent hover:border-apple-blue pb-0.5"
                                     >
                                         Don't have one? Generate here{" "}
-                                        <ExternalLink size={10} />
+                                        <HugeiconsIcon
+                                            icon={ArrowUpRight01Icon}
+                                            size={10}
+                                            color="currentColor"
+                                            strokeWidth={1.5}
+                                        />
                                     </a>
                                 </div>
                             </div>
@@ -157,9 +181,11 @@ export const TokenPromoModal = ({
                                         }
                                         className="peer w-5 h-5 cursor-pointer appearance-none rounded-md border-2 border-gray-300 transition-all checked:border-apple-blue checked:bg-apple-blue hover:border-gray-400"
                                     />
-                                    <Check
+                                    <HugeiconsIcon
+                                        icon={CheckmarkCircle01Icon}
                                         size={12}
-                                        className="pointer-events-none absolute text-white opacity-0 transition-opacity peer-checked:opacity-100"
+                                        color="white"
+                                        className="pointer-events-none absolute opacity-0 transition-opacity peer-checked:opacity-100"
                                         strokeWidth={3}
                                     />
                                 </div>

@@ -1,35 +1,18 @@
 "use client";
 
 import {
-    Activity,
-    AlertCircle,
-    ArrowRight,
-    ChevronLeft,
-    ChevronRight,
-    Code2,
-    Cpu,
-    ExternalLink,
-    Eye,
-    EyeOff,
-    GitBranch,
-    Key,
-    LayoutDashboard,
-    Loader2,
-    MapPin,
-    Search,
-    Terminal,
-    Trophy,
-    Users,
-} from "lucide-react";
-import dynamic from "next/dynamic";
-import {
-    startTransition,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-    useTransition,
-} from "react";
+    AlertCircleIcon,
+    ArrowLeft01Icon,
+    ArrowRight01Icon,
+    ArrowUpRight01Icon,
+    CommandLineIcon,
+    EyeIcon,
+    KeyIcon,
+    Loading01Icon,
+    Search01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { StatCard } from "@/components/StatCard";
 import { TokenPromoModal } from "@/components/TokenPromoModalWrapper";
@@ -139,14 +122,14 @@ function GitRankedClient() {
 
     useEffect(() => {
         fetchUsers(location, page);
-    }, []);
+    }, [fetchUsers, location, page]);
 
     useEffect(() => {
         setPage(1);
         startTransition(() => {
             fetchUsers(location, 1);
         });
-    }, [sortBy, apiKey]);
+    }, [fetchUsers, location, sortBy, apiKey]);
 
     useEffect(() => {
         if (page > 1) {
@@ -154,7 +137,7 @@ function GitRankedClient() {
                 fetchUsers(location, page);
             });
         }
-    }, [page]);
+    }, [fetchUsers, location, page]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -273,9 +256,11 @@ function GitRankedClient() {
                 <div className="bg-orange-50 border-b border-orange-100 relative z-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <AlertCircle
+                            <HugeiconsIcon
+                                icon={AlertCircleIcon}
                                 size={16}
-                                className="text-orange-500"
+                                color="#F97316"
+                                strokeWidth={1.5}
                             />
                             <span className="text-xs font-medium text-orange-800">
                                 Rate limit reached. Showing cached data.
@@ -297,7 +282,12 @@ function GitRankedClient() {
                     <div className="flex justify-between h-16 items-center">
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center shadow-lg shadow-black/10">
-                                <Terminal className="text-white h-5 w-5" />
+                                <HugeiconsIcon
+                                    icon={CommandLineIcon}
+                                    size={20}
+                                    color="white"
+                                    strokeWidth={1.5}
+                                />
                             </div>
                             <div className="flex flex-col">
                                 <span className="font-medium text-lg text-apple-text leading-none tracking-tight">
@@ -308,7 +298,13 @@ function GitRankedClient() {
 
                         <div className="flex items-center gap-3">
                             <div className="hidden md:flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-apple-blue/20 transition-all w-64">
-                                <Search size={16} className="text-gray-400" />
+                                <HugeiconsIcon
+                                    icon={Search01Icon}
+                                    size={16}
+                                    color="currentColor"
+                                    className="text-gray-400"
+                                    strokeWidth={1.5}
+                                />
                                 <input
                                     type="text"
                                     placeholder="Find user..."
@@ -321,9 +317,12 @@ function GitRankedClient() {
                                     disabled={isSearchingUser}
                                 />
                                 {isSearchingUser && (
-                                    <Loader2
+                                    <HugeiconsIcon
+                                        icon={Loading01Icon}
                                         size={14}
-                                        className="text-apple-blue animate-spin"
+                                        color="#2563EB"
+                                        className="animate-spin"
+                                        strokeWidth={1.5}
                                     />
                                 )}
                             </div>
@@ -334,7 +333,12 @@ function GitRankedClient() {
                                 className={`p-2 rounded-full transition-all ${apiKey ? "text-apple-blue bg-blue-50" : "text-gray-500 hover:bg-gray-100"}`}
                                 title="API Settings"
                             >
-                                <Key size={20} />
+                                <HugeiconsIcon
+                                    icon={KeyIcon}
+                                    size={20}
+                                    color="currentColor"
+                                    strokeWidth={1.5}
+                                />
                             </button>
                         </div>
                     </div>
@@ -355,7 +359,12 @@ function GitRankedClient() {
                                             className="text-apple-blue hover:underline inline-flex items-center gap-1 font-medium"
                                         >
                                             Generate one here{" "}
-                                            <ExternalLink size={12} />
+                                            <HugeiconsIcon
+                                                icon={ArrowUpRight01Icon}
+                                                size={12}
+                                                color="currentColor"
+                                                strokeWidth={1.5}
+                                            />
                                         </a>
                                     </p>
                                 </div>
@@ -379,11 +388,14 @@ function GitRankedClient() {
                                             }
                                             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                                         >
-                                            {showToken ? (
-                                                <EyeOff size={14} />
-                                            ) : (
-                                                <Eye size={14} />
-                                            )}
+                                            <HugeiconsIcon
+                                                icon={EyeIcon}
+                                                size={14}
+                                                color="currentColor"
+                                                strokeWidth={
+                                                    showToken ? 3 : 1.5
+                                                }
+                                            />
                                         </button>
                                     </div>
                                     <button
@@ -416,7 +428,13 @@ function GitRankedClient() {
                         >
                             <div className="relative shadow-soft rounded-2xl">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Search className="h-5 w-5 text-gray-400" />
+                                    <HugeiconsIcon
+                                        icon={Search01Icon}
+                                        size={20}
+                                        color="currentColor"
+                                        className="text-gray-400"
+                                        strokeWidth={1.5}
+                                    />
                                 </div>
                                 <input
                                     type="text"
@@ -447,21 +465,21 @@ function GitRankedClient() {
                                         ref={suggestionsRef}
                                         className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-hover border border-gray-100 z-50 max-h-60 overflow-y-auto py-2"
                                     >
-                                        {suggestions.map(
-                                            (suggestion, index) => (
-                                                <li
-                                                    key={index}
+                                        {suggestions.map((suggestion) => (
+                                            <li key={suggestion}>
+                                                <button
+                                                    type="button"
                                                     onClick={() =>
                                                         handleSelectSuggestion(
                                                             suggestion,
                                                         )
                                                     }
-                                                    className="px-5 py-3 text-sm text-gray-600 hover:bg-gray-50 hover:text-black cursor-pointer transition-colors"
+                                                    className="w-full text-left px-5 py-3 text-sm text-gray-600 hover:bg-gray-50 hover:text-black cursor-pointer transition-colors"
                                                 >
                                                     {suggestion}
-                                                </li>
-                                            ),
-                                        )}
+                                                </button>
+                                            </li>
+                                        ))}
                                     </ul>
                                 )}
                             </div>
@@ -551,7 +569,12 @@ function GitRankedClient() {
                                 disabled={page === 1 || loading}
                                 className="p-2 text-gray-400 hover:text-apple-text disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
                             >
-                                <ChevronLeft size={24} />
+                                <HugeiconsIcon
+                                    icon={ArrowLeft01Icon}
+                                    size={24}
+                                    color="currentColor"
+                                    strokeWidth={1.5}
+                                />
                             </button>
                             <span className="text-sm font-medium text-gray-500 tabular-nums">
                                 Page {page}
@@ -562,7 +585,12 @@ function GitRankedClient() {
                                 disabled={users.length < 100 || loading}
                                 className="p-2 text-gray-400 hover:text-apple-text disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
                             >
-                                <ChevronRight size={24} />
+                                <HugeiconsIcon
+                                    icon={ArrowRight01Icon}
+                                    size={24}
+                                    color="currentColor"
+                                    strokeWidth={1.5}
+                                />
                             </button>
                         </div>
                     )}
@@ -578,7 +606,12 @@ function GitRankedClient() {
                             </p>
                         </div>
                         <div className="hidden sm:block p-3 bg-white rounded-full text-apple-blue shadow-sm">
-                            <ArrowRight size={20} />
+                            <HugeiconsIcon
+                                icon={ArrowRight01Icon}
+                                size={20}
+                                color="#2563EB"
+                                strokeWidth={1.5}
+                            />
                         </div>
                     </div>
                 </div>

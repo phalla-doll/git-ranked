@@ -1,4 +1,11 @@
-import { Building, Github, Link as LinkIcon, MapPin, X } from "lucide-react";
+import {
+    ArrowUpRight01Icon,
+    Building01Icon,
+    Cancel01Icon,
+    Github01Icon,
+    MapPinIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import type { GitHubUserDetail } from "@/types";
 
@@ -35,7 +42,12 @@ export const UserModal = ({ user, isOpen, onClose }: UserModalProps) => {
                                 className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-sm text-gray-400 hover:text-gray-900 transition-colors z-20"
                                 aria-label="Close modal"
                             >
-                                <X size={18} />
+                                <HugeiconsIcon
+                                    icon={Cancel01Icon}
+                                    size={18}
+                                    color="currentColor"
+                                    strokeWidth={1.5}
+                                />
                             </button>
                         </div>
 
@@ -56,7 +68,12 @@ export const UserModal = ({ user, isOpen, onClose }: UserModalProps) => {
                                     rel="noopener noreferrer"
                                     className="mb-1 px-5 py-2 bg-black text-white rounded-full text-xs font-medium hover:bg-gray-800 transition-all flex items-center gap-2"
                                 >
-                                    <Github size={14} />
+                                    <HugeiconsIcon
+                                        icon={Github01Icon}
+                                        size={14}
+                                        color="white"
+                                        strokeWidth={1.5}
+                                    />
                                     GitHub
                                 </a>
                             </div>
@@ -127,27 +144,36 @@ export const UserModal = ({ user, isOpen, onClose }: UserModalProps) => {
                             <div className="space-y-3 text-sm text-gray-600 font-normal">
                                 {user.location && (
                                     <div className="flex items-center gap-3">
-                                        <MapPin
+                                        <HugeiconsIcon
+                                            icon={MapPinIcon}
                                             size={16}
+                                            color="currentColor"
                                             className="text-gray-400"
+                                            strokeWidth={1.5}
                                         />
                                         <span>{user.location}</span>
                                     </div>
                                 )}
                                 {user.company && (
                                     <div className="flex items-center gap-3">
-                                        <Building
+                                        <HugeiconsIcon
+                                            icon={Building01Icon}
                                             size={16}
+                                            color="currentColor"
                                             className="text-gray-400"
+                                            strokeWidth={1.5}
                                         />
                                         <span>{user.company}</span>
                                     </div>
                                 )}
                                 {user.blog && (
                                     <div className="flex items-center gap-3">
-                                        <LinkIcon
+                                        <HugeiconsIcon
+                                            icon={ArrowUpRight01Icon}
                                             size={16}
+                                            color="currentColor"
                                             className="text-gray-400"
+                                            strokeWidth={1.5}
                                         />
                                         <a
                                             href={
