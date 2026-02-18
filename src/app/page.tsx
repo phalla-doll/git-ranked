@@ -240,7 +240,10 @@ function GitRankedClient() {
                                     apiKey,
                                 );
                                 if (fullUser) {
-                                    setModalUser(fullUser);
+                                    setModalUser({
+                                        ...user,
+                                        total_stars: fullUser.total_stars,
+                                    });
                                 }
                             } catch (err) {
                                 console.error(

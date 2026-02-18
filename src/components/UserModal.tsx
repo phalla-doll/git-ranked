@@ -33,14 +33,14 @@ export const UserModal = ({
         >
             <button
                 type="button"
-                className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+                className="fixed inset-0 z-10 bg-gray-900/20 backdrop-blur-sm transition-opacity animate-in fade-in duration-200 cursor-default"
                 onClick={onClose}
                 aria-label="Close modal"
             />
 
-            <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="fixed inset-0 z-20 overflow-y-auto pointer-events-none">
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                    <div className="relative transform overflow-hidden bg-white rounded-3xl shadow-2xl text-left transition-all sm:my-8 w-full max-w-lg animate-in zoom-in-95 duration-200">
+                    <div className="relative transform overflow-hidden bg-white rounded-3xl shadow-2xl text-left transition-all sm:my-8 w-full max-w-lg animate-in zoom-in-95 duration-200 pointer-events-auto">
                         <div className="relative h-24 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
                             <button
                                 type="button"
@@ -102,13 +102,7 @@ export const UserModal = ({
                             <div className="grid grid-cols-5 gap-0 mb-8 bg-gray-50 rounded-xl p-4 divide-x divide-gray-200">
                                 <div className="text-center px-1">
                                     <div className="text-lg font-medium text-apple-text">
-                                        {isLoading ? (
-                                            <div className="h-7 flex items-center justify-center">
-                                                <div className="w-4 h-4 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin"></div>
-                                            </div>
-                                        ) : (
-                                            user.public_repos.toLocaleString()
-                                        )}
+                                        {user.public_repos.toLocaleString()}
                                     </div>
                                     <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
                                         Repos
