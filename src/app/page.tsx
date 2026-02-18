@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { LocationSearch } from "@/components/LocationSearch";
 import { PageFooter } from "@/components/PageFooter";
@@ -12,10 +12,8 @@ import { StatsGrid } from "@/components/StatsGrid";
 import { TokenPromoModal } from "@/components/TokenPromoModalWrapper";
 import { UserModal } from "@/components/UserModal";
 import { useApiKey } from "@/hooks/useApiKey";
-import { useLocationSuggestions } from "@/hooks/useLocationSuggestions";
 import { useUsers } from "@/hooks/useUsers";
 import { getUserByName } from "@/lib/services/githubService";
-import { formatLocationName } from "@/lib/services/locationService";
 import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
 
@@ -34,10 +32,6 @@ function GitRankedClient() {
     const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
     const [showPromoModal, setShowPromoModal] = useState(false);
     const [isPending, _startTransition] = useTransition();
-    const [validationError, setValidationError] = useState<string | null>(null);
-    const [isValidating, setIsValidating] = useState(false);
-    const [wasSuggestionSelected, setWasSuggestionSelected] = useState(false);
-    const inputWrapperRef = useRef<HTMLDivElement>(null);
 
     const { apiKey, setApiKey, saveApiKey } = useApiKey();
     const {
@@ -50,29 +44,6 @@ function GitRankedClient() {
         hasNextPage,
         loadingProgress,
     } = useUsers(location, sortBy, page, apiKey, refreshKey);
-    const {
-        suggestions,
-        showSuggestions,
-        setShowSuggestions,
-        handleLocationChange,
-        resolveLocation,
-    } = useLocationSuggestions();
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                inputWrapperRef.current &&
-                !inputWrapperRef.current.contains(event.target as Node)
-            ) {
-                setShowSuggestions(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [setShowSuggestions]);
 
     useEffect(() => {
         if (apiKey) return;
@@ -92,59 +63,15 @@ function GitRankedClient() {
         return () => clearTimeout(timer);
     }, [apiKey]);
 
-    const handleSearch = async () => {
-        setValidationError(null);
-
-        if (!inputValue.trim()) {
-            setValidationError("Please enter a location");
+    const handleSearch = () => {
+        const sanitized = inputValue
+            .trim()
+            .replace(/[^a-zA-Z0-9\s]/g, "")
+            .replace(/\s+/g, " ");
+        if (!sanitized) {
             return;
         }
-
-        if (wasSuggestionSelected) {
-            setPage(1);
-            return;
-        }
-
-        setIsValidating(true);
-        try {
-            const resolved = await resolveLocation(inputValue.trim());
-            if (!resolved) {
-                setValidationError(
-                    "Location not found. Please select from suggestions.",
-                );
-                return;
-            }
-            const formattedLocation = formatLocationName(resolved);
-            setLocation(formattedLocation);
-            setInputValue(formattedLocation);
-            setWasSuggestionSelected(true);
-            setPage(1);
-        } catch (error) {
-            console.error("Error validating location:", error);
-            setValidationError(
-                "Failed to validate location. Please try again.",
-            );
-        } finally {
-            setIsValidating(false);
-        }
-    };
-
-    const handleLocationChangeWrapper = useCallback(
-        (value: string) => {
-            setInputValue(value);
-            setValidationError(null);
-            setWasSuggestionSelected(false);
-            handleLocationChange(value);
-        },
-        [handleLocationChange],
-    );
-
-    const handleSelectSuggestion = (suggestion: string) => {
-        setInputValue(suggestion);
-        setLocation(suggestion);
-        setShowSuggestions(false);
-        setValidationError(null);
-        setWasSuggestionSelected(true);
+        setLocation(sanitized);
         setPage(1);
     };
 
@@ -256,25 +183,11 @@ function GitRankedClient() {
                             Find the most cracked devs in your local dev
                             community.
                         </p>
-                        <div className="relative group" ref={inputWrapperRef}>
-                            <LocationSearch
-                                location={inputValue}
-                                suggestions={suggestions}
-                                showSuggestions={showSuggestions}
-                                validationError={validationError}
-                                isValidating={isValidating}
-                                onLocationChange={handleLocationChangeWrapper}
-                                onSearch={handleSearch}
-                                onLocationFocus={() => {
-                                    if (
-                                        inputValue.trim().length > 0 &&
-                                        suggestions.length > 0
-                                    )
-                                        setShowSuggestions(true);
-                                }}
-                                onSelectSuggestion={handleSelectSuggestion}
-                            />
-                        </div>
+                        <LocationSearch
+                            location={inputValue}
+                            onLocationChange={setInputValue}
+                            onSearch={handleSearch}
+                        />
                     </div>
                 </div>
 
