@@ -193,7 +193,9 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                 <div className="flex flex-col md:flex-row gap-8 justify-between items-end">
                     <div className="w-full md:max-w-lg">
                         <h1 className="text-3xl sm:text-4xl font-medium tracking-tight text-apple-text mb-3">
-                            {displayLocation}&apos;s GitHub Leaderboard
+                            {displayLocation}&apos;s GitHub
+                            <br />
+                            Leaderboard
                         </h1>
                         <p className="text-lg text-gray-500 mb-8 leading-relaxed">
                             Find the most cracked devs in your local dev
