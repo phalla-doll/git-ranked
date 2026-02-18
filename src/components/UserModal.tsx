@@ -132,7 +132,7 @@ export const UserModal = ({
                                             <div className="h-7 flex items-center justify-center">
                                                 <HugeiconsIcon
                                                     icon={Loading03Icon}
-                                                    size={16}
+                                                    size={20}
                                                     color="currentColor"
                                                     className="text-gray-600 animate-spin"
                                                 />
