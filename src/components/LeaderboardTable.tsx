@@ -80,7 +80,7 @@ export const LeaderboardTable = memo(
         loadingProgress,
         onUserClick,
     }: LeaderboardTableProps) => {
-        if (loading && users.length === 0) {
+        if (loading) {
             return (
                 <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-100">
                     <div className="flex flex-col items-center">
@@ -307,17 +307,6 @@ export const LeaderboardTable = memo(
                         </tbody>
                     </table>
                 </div>
-
-                {loading && (
-                    <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-10">
-                        <HugeiconsIcon
-                            icon={Loading03Icon}
-                            size={32}
-                            color="currentColor"
-                            className="text-apple-blue animate-spin"
-                        />
-                    </div>
-                )}
             </div>
         );
     },
