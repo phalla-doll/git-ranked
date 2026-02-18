@@ -1,5 +1,6 @@
 import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Image from "next/image";
 
 interface PageFooterProps {
     location: string;
@@ -21,7 +22,13 @@ export function PageFooter({
             <div className="flex flex-col md:flex-row justify-between gap-6">
                 <div className="md:max-w-lg">
                     <div className="space-y-2">
-                        <p className="text-lg font-semibold text-gray-900">
+                        <p className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                            <Image
+                                src="/favicon-32x32.png"
+                                alt="GitRanked"
+                                width={24}
+                                height={24}
+                            />
                             GitRanked {location}
                         </p>
                         <p className="text-sm text-gray-500 leading-relaxed">

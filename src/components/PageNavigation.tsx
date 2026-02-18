@@ -1,10 +1,10 @@
 import {
-    CommandLineIcon,
     KeyIcon,
     Loading03Icon,
     Search01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Image from "next/image";
 import { ApiKeyPanel } from "./ApiKeyPanel";
 
 interface PageNavigationProps {
@@ -41,14 +41,13 @@ export function PageNavigation({
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
                     <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-black rounded-xl flex items-center justify-center shadow-lg shadow-black/10">
-                            <HugeiconsIcon
-                                icon={CommandLineIcon}
-                                size={20}
-                                color="white"
-                                strokeWidth={1.5}
-                            />
-                        </div>
+                        <Image
+                            src="/favicon-32x32.png"
+                            alt="GitRanked"
+                            width={28}
+                            height={28}
+                            className="size-7"
+                        />
                         <div className="flex flex-col">
                             <span className="font-medium text-lg text-apple-text leading-none tracking-tight">
                                 GitRanked
