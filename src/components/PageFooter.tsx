@@ -31,7 +31,7 @@ export function PageFooter({
                     </div>
                 </div>
 
-                <div className="flex flex-col items-start flex-shrink-0 space-y-3">
+                <div className="flex flex-col items-start shrink-0 space-y-3">
                     <div className="space-y-1">
                         <p className="text-sm font-medium text-gray-700">
                             Don&apos;t see yourself listed?

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { LocationSearch } from "@/components/LocationSearch";
@@ -18,8 +19,11 @@ import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
 
 function GitRankedClient() {
-    const [location, setLocation] = useState("Cambodia");
-    const [inputValue, setInputValue] = useState("Cambodia");
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const initialLocation = searchParams.get("location") || "Cambodia";
+    const [location, setLocation] = useState(initialLocation);
+    const [inputValue, setInputValue] = useState(initialLocation);
     const [sortBy, setSortBy] = useState<SortOption>(SortOption.FOLLOWERS);
     const [page, setPage] = useState(1);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -63,6 +67,12 @@ function GitRankedClient() {
         return () => clearTimeout(timer);
     }, [apiKey]);
 
+    useEffect(() => {
+        if (!searchParams.get("location")) {
+            router.replace("?location=Cambodia");
+        }
+    }, [searchParams, router]);
+
     const handleSearch = () => {
         const sanitized = inputValue
             .trim()
@@ -73,6 +83,7 @@ function GitRankedClient() {
         }
         setLocation(sanitized);
         setPage(1);
+        router.push(`?location=${encodeURIComponent(sanitized)}`);
     };
 
     const handleUserSearchKeyDown = async (
