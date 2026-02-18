@@ -101,61 +101,66 @@ export const UserModal = ({
                                 </p>
                             )}
 
-                            <div className="grid grid-cols-5 gap-0 mb-8 bg-gray-50 rounded-xl p-4 divide-x divide-gray-200">
-                                <div className="text-center px-1">
-                                    <div className="text-lg font-medium text-apple-text">
-                                        {user.public_repos.toLocaleString()}
+                            <div className="mb-8 bg-gray-50 rounded-xl p-4">
+                                <div className="grid grid-cols-3 divide-x divide-gray-200 pb-3 border-b border-gray-200">
+                                    <div className="text-center px-1">
+                                        <div className="text-lg font-medium text-apple-text">
+                                            {user.public_repos.toLocaleString()}
+                                        </div>
+                                        <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
+                                            Repos
+                                        </div>
                                     </div>
-                                    <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
-                                        Repos
+                                    <div className="text-center px-1">
+                                        <div className="text-lg font-medium text-apple-text">
+                                            {user.followers.toLocaleString()}
+                                        </div>
+                                        <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
+                                            Followers
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="text-center px-1">
-                                    <div className="text-lg font-medium text-apple-text">
-                                        {user.followers.toLocaleString()}
-                                    </div>
-                                    <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
-                                        Followers
-                                    </div>
-                                </div>
-                                <div className="text-center px-1">
-                                    <div className="text-lg font-medium text-apple-text">
-                                        {user.following.toLocaleString()}
-                                    </div>
-                                    <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
-                                        Following
-                                    </div>
-                                </div>
-                                <div className="text-center px-1">
-                                    <div className="text-lg font-medium text-apple-text">
-                                        {isLoading ? (
-                                            <div className="h-7 flex items-center justify-center">
-                                                <HugeiconsIcon
-                                                    icon={Loading03Icon}
-                                                    size={20}
-                                                    color="currentColor"
-                                                    className="text-gray-600 animate-spin"
-                                                />
-                                            </div>
-                                        ) : user.total_stars !== undefined ? (
-                                            user.total_stars.toLocaleString()
-                                        ) : (
-                                            "-"
-                                        )}
-                                    </div>
-                                    <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
-                                        Stars
+                                    <div className="text-center px-1">
+                                        <div className="text-lg font-medium text-apple-text">
+                                            {user.following.toLocaleString()}
+                                        </div>
+                                        <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
+                                            Following
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="text-center px-1">
-                                    <div className="text-lg font-medium text-apple-blue">
-                                        {user.recent_activity_count !==
-                                        undefined
-                                            ? user.recent_activity_count.toLocaleString()
-                                            : "-"}
+                                <div className="grid grid-cols-2 divide-x divide-gray-200 pt-3">
+                                    <div className="text-center px-1">
+                                        <div className="text-lg font-medium text-apple-text">
+                                            {isLoading ? (
+                                                <div className="h-7 flex items-center justify-center">
+                                                    <HugeiconsIcon
+                                                        icon={Loading03Icon}
+                                                        size={20}
+                                                        color="currentColor"
+                                                        className="text-gray-600 animate-spin"
+                                                    />
+                                                </div>
+                                            ) : user.total_stars !==
+                                              undefined ? (
+                                                user.total_stars.toLocaleString()
+                                            ) : (
+                                                "-"
+                                            )}
+                                        </div>
+                                        <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
+                                            Stars
+                                        </div>
                                     </div>
-                                    <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
-                                        Contribs
+                                    <div className="text-center px-1">
+                                        <div className="text-lg font-medium text-apple-blue">
+                                            {user.recent_activity_count !==
+                                            undefined
+                                                ? user.recent_activity_count.toLocaleString()
+                                                : "-"}
+                                        </div>
+                                        <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
+                                            Contribs
+                                        </div>
                                     </div>
                                 </div>
                             </div>
