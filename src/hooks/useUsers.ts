@@ -184,6 +184,9 @@ export function useUsers(
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: sortBy and refreshTrigger intentionally trigger re-fetch when they change
     useEffect(() => {
+        setUsers([]);
+        setTotalCount(0);
+
         cursorsRef.current = {};
         pagesCacheRef.current = {};
         hasNextPageCacheRef.current = {};

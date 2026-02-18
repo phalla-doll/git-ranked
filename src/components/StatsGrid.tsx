@@ -1,6 +1,6 @@
+import { StatCard } from "@/components/StatCard";
 import type { GitHubUserDetail, SortOption } from "@/types";
 import { SortOption as SO } from "@/types";
-import { StatCard } from "./StatCard";
 
 interface StatsGridProps {
     totalCount: number;
@@ -41,11 +41,12 @@ function getDynamicStats(
             stats.push(
                 {
                     label: "Most Followers",
-                    value: maxFollowers.toLocaleString(),
+                    value:
+                        maxFollowers > 0 ? maxFollowers.toLocaleString() : "-",
                 },
                 {
                     label: "Total Repositories",
-                    value: totalRepos.toLocaleString(),
+                    value: totalRepos > 0 ? totalRepos.toLocaleString() : "-",
                 },
             );
             break;
@@ -53,11 +54,11 @@ function getDynamicStats(
             stats.push(
                 {
                     label: "Most Repositories",
-                    value: maxRepos.toLocaleString(),
+                    value: maxRepos > 0 ? maxRepos.toLocaleString() : "-",
                 },
                 {
                     label: "Total Repositories",
-                    value: totalRepos.toLocaleString(),
+                    value: totalRepos > 0 ? totalRepos.toLocaleString() : "-",
                 },
             );
             break;
@@ -65,11 +66,17 @@ function getDynamicStats(
             stats.push(
                 {
                     label: "Joined Last 3 Months",
-                    value: joinedLast3Months.toLocaleString(),
+                    value:
+                        joinedLast3Months > 0
+                            ? joinedLast3Months.toLocaleString()
+                            : "-",
                 },
                 {
                     label: "Joined This Month",
-                    value: joinedThisMonth.toLocaleString(),
+                    value:
+                        joinedThisMonth > 0
+                            ? joinedThisMonth.toLocaleString()
+                            : "-",
                 },
             );
             break;
@@ -77,11 +84,14 @@ function getDynamicStats(
             stats.push(
                 {
                     label: "Top Contributor",
-                    value: maxContributions.toLocaleString(),
+                    value:
+                        maxContributions > 0
+                            ? maxContributions.toLocaleString()
+                            : "-",
                 },
                 {
                     label: "Total Repositories",
-                    value: totalRepos.toLocaleString(),
+                    value: totalRepos > 0 ? totalRepos.toLocaleString() : "-",
                 },
             );
             break;
@@ -89,11 +99,12 @@ function getDynamicStats(
             stats.push(
                 {
                     label: "Most Followers",
-                    value: maxFollowers.toLocaleString(),
+                    value:
+                        maxFollowers > 0 ? maxFollowers.toLocaleString() : "-",
                 },
                 {
                     label: "Total Repositories",
-                    value: totalRepos.toLocaleString(),
+                    value: totalRepos > 0 ? totalRepos.toLocaleString() : "-",
                 },
             );
     }
