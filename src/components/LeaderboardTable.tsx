@@ -30,7 +30,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
         icon = (
             <HugeiconsIcon
                 icon={Award01Icon}
-                size={16}
+                size={20}
                 color="#EAB308"
                 strokeWidth={1.5}
                 className="fill-yellow-500/20"
@@ -41,7 +41,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
         icon = (
             <HugeiconsIcon
                 icon={Medal01Icon}
-                size={16}
+                size={20}
                 color="#9CA3AF"
                 strokeWidth={1.5}
                 className="fill-gray-400/20"
@@ -52,7 +52,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
         icon = (
             <HugeiconsIcon
                 icon={Medal01Icon}
-                size={16}
+                size={20}
                 color="#F97316"
                 strokeWidth={1.5}
                 className="fill-orange-500/20"
