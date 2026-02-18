@@ -20,7 +20,8 @@ export function PaginationControls({
                 type="button"
                 onClick={() => onPageChange(Math.max(1, page - 1))}
                 disabled={page === 1 || loading}
-                className="p-2 text-gray-400 hover:text-apple-text disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
+                aria-label="Previous page"
+                className="p-3 text-gray-400 hover:text-apple-text disabled:opacity-30 disabled:hover:text-gray-400 transition-colors min-h-11 min-w-11 flex items-center justify-center"
             >
                 <HugeiconsIcon
                     icon={ArrowLeft01Icon}
@@ -36,7 +37,8 @@ export function PaginationControls({
                 type="button"
                 onClick={() => onPageChange(page + 1)}
                 disabled={!hasNextPage || loading}
-                className="p-2 text-gray-400 hover:text-apple-text disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
+                aria-label="Next page"
+                className="p-3 text-gray-400 hover:text-apple-text disabled:opacity-30 disabled:hover:text-gray-400 transition-colors min-h-11 min-w-11 flex items-center justify-center"
             >
                 <HugeiconsIcon
                     icon={ArrowRight01Icon}

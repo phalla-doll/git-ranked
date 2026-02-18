@@ -92,13 +92,13 @@ export const LeaderboardTable = memo(
                         />
                         <p className="text-apple-text font-medium text-lg">
                             {loadingProgress
-                                ? `Fetching all users... ${loadingProgress.current?.toLocaleString() || 0}/${loadingProgress.total?.toLocaleString() || 0}`
-                                : "Loading profiles..."}
+                                ? `Fetching all users… ${loadingProgress.current?.toLocaleString() || 0}/${loadingProgress.total?.toLocaleString() || 0}`
+                                : "Loading profiles…"}
                         </p>
                         <p className="text-apple-gray text-sm mt-1">
                             {loadingProgress
-                                ? "Sorting by contributions."
-                                : "Analyzing GitHub data."}
+                                ? "Sorting by contributions…"
+                                : "Analyzing GitHub data…"}
                         </p>
                     </div>
                 </div>
@@ -239,6 +239,20 @@ export const LeaderboardTable = memo(
                                                             </>
                                                         )}
                                                     </div>
+                                                    <div className="flex items-center gap-3 mt-1.5 sm:hidden">
+                                                        <span
+                                                            className={`text-xs font-medium ${sortBy === SortOption.FOLLOWERS ? "text-apple-blue" : "text-gray-500"}`}
+                                                        >
+                                                            {user.followers.toLocaleString()}{" "}
+                                                            followers
+                                                        </span>
+                                                        <span
+                                                            className={`text-xs font-medium ${sortBy === SortOption.REPOS ? "text-apple-blue" : "text-gray-500"}`}
+                                                        >
+                                                            {user.public_repos.toLocaleString()}{" "}
+                                                            repos
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -292,7 +306,8 @@ export const LeaderboardTable = memo(
                                                 onClick={(e) =>
                                                     e.stopPropagation()
                                                 }
-                                                className="inline-flex p-2 text-gray-300 hover:text-apple-blue hover:bg-blue-50 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+                                                aria-label={`View ${user.login} on GitHub`}
+                                                className="inline-flex p-2.5 text-gray-300 hover:text-apple-blue hover:bg-blue-50 rounded-full transition-colors opacity-0 group-hover:opacity-100 min-h-11 min-w-11 items-center justify-center sm:opacity-100"
                                             >
                                                 <HugeiconsIcon
                                                     icon={ArrowUpRight01Icon}

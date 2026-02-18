@@ -67,7 +67,7 @@ export function PageNavigation({
                             />
                             <input
                                 type="text"
-                                placeholder="Find user..."
+                                placeholder="Find user…"
                                 className="bg-transparent border-none focus:outline-none text-sm w-full text-apple-text placeholder-gray-400 font-medium"
                                 value={userSearchQuery}
                                 onChange={(e) =>
@@ -75,6 +75,7 @@ export function PageNavigation({
                                 }
                                 onKeyDown={onUserSearchKeyDown}
                                 disabled={isSearchingUser}
+                                aria-label="Search for a user"
                             />
                             {isSearchingUser && (
                                 <HugeiconsIcon
@@ -89,9 +90,35 @@ export function PageNavigation({
 
                         <button
                             type="button"
+                            className="md:hidden p-2.5 rounded-full transition-all text-gray-500 hover:bg-gray-100 min-h-11 min-w-11 flex items-center justify-center"
+                            onClick={() => {
+                                const query = prompt(
+                                    "Search for a GitHub user:",
+                                );
+                                if (query?.trim()) {
+                                    onUserSearchChange(query.trim());
+                                    onUserSearchKeyDown({
+                                        key: "Enter",
+                                        preventDefault: () => {},
+                                    } as React.KeyboardEvent<HTMLInputElement>);
+                                }
+                            }}
+                            aria-label="Search for a user"
+                        >
+                            <HugeiconsIcon
+                                icon={Search01Icon}
+                                size={20}
+                                color="currentColor"
+                                strokeWidth={1.5}
+                            />
+                        </button>
+
+                        <button
+                            type="button"
                             onClick={onToggleKeyInput}
-                            className={`p-2 rounded-full transition-all ${hasApiKey ? "text-apple-blue bg-blue-50" : "text-gray-500 hover:bg-gray-100"}`}
+                            className={`p-2.5 rounded-full transition-all min-h-11 min-w-11 flex items-center justify-center ${hasApiKey ? "text-apple-blue bg-blue-50" : "text-gray-500 hover:bg-gray-100"}`}
                             title="API Settings"
+                            aria-label="API Settings"
                         >
                             <HugeiconsIcon
                                 icon={KeyIcon}

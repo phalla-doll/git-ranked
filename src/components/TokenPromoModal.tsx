@@ -51,7 +51,7 @@ export const TokenPromoModal = ({
                 aria-label="Close modal"
             />
 
-            <div className="fixed inset-0 z-10 overflow-y-auto pointer-events-none">
+            <div className="fixed inset-0 z-10 overflow-y-auto pointer-events-none overscroll-contain">
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                     <div className="pointer-events-auto relative transform overflow-hidden bg-white rounded-3xl shadow-2xl text-left transition-all sm:my-8 w-full max-w-md animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 border border-gray-100">
                         <button
@@ -122,17 +122,23 @@ export const TokenPromoModal = ({
                                     </div>
                                     <input
                                         type={showToken ? "text" : "password"}
-                                        placeholder="Paste your GitHub token..."
+                                        placeholder="Paste your GitHub token…"
                                         value={keyInput}
                                         onChange={(e) =>
                                             setKeyInput(e.target.value)
                                         }
-                                        className="block w-full pl-10 pr-10 py-3.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-apple-blue focus:ring-1 focus:ring-apple-blue transition-all shadow-sm"
+                                        className="block w-full pl-10 pr-10 py-3.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus-visible:border-apple-blue focus-visible:ring-1 focus-visible:ring-apple-blue transition-all shadow-sm"
+                                        aria-label="GitHub Token"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowToken(!showToken)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                        aria-label={
+                                            showToken
+                                                ? "Hide token"
+                                                : "Show token"
+                                        }
                                     >
                                         <HugeiconsIcon
                                             icon={EyeIcon}

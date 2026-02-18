@@ -40,7 +40,7 @@ export const UserModal = ({
                 aria-label="Close modal"
             />
 
-            <div className="fixed inset-0 z-20 overflow-y-auto pointer-events-none">
+            <div className="fixed inset-0 z-20 overflow-y-auto pointer-events-none overscroll-contain">
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                     <div className="relative transform overflow-hidden bg-white rounded-3xl shadow-2xl text-left transition-all sm:my-8 w-full max-w-lg animate-in zoom-in-95 duration-200 pointer-events-auto">
                         <div className="relative h-24 bg-linear-to-r from-gray-50 to-white border-b border-gray-100">

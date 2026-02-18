@@ -96,7 +96,7 @@ export function RateLimitBanner({
                 <button
                     type="button"
                     onClick={onAddKey}
-                    className="text-[10px] font-medium text-orange-700 bg-white border border-orange-200 px-3 py-1 rounded-full hover:bg-orange-50 transition-colors"
+                    className="text-[10px] font-medium text-orange-700 bg-white border border-orange-200 px-3 py-1.5 rounded-full hover:bg-orange-50 transition-colors min-h-9"
                 >
                     Add Key
                 </button>

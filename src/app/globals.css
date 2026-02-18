@@ -35,6 +35,29 @@ body {
     font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+html {
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
+}
+
+button,
+a,
+input,
+[role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+}
+
 /* Apple-style utilities */
 .glass-panel {
     @apply bg-white/75 backdrop-blur-md border-b border-gray-200/5;
@@ -66,4 +89,14 @@ body {
 
 .animate-in {
     animation: slide-in-top 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-in {
+        animation: none;
+    }
+
+    .animate-spin {
+        animation: none;
+    }
 }

@@ -298,7 +298,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
 export function LoadingFallback() {
     return (
         <div className="min-h-screen font-sans text-apple-text bg-apple-bg flex items-center justify-center">
-            <div className="animate-pulse text-gray-400">Loading...</div>
+            <div className="animate-pulse text-gray-400">Loading…</div>
         </div>
     );
 }

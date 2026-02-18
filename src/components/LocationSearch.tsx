@@ -32,11 +32,12 @@ export function LocationSearch({
                 </div>
                 <input
                     type="text"
-                    className="block w-full pl-12 pr-4 py-4 bg-white rounded-2xl border-0 text-apple-text placeholder-gray-400 focus:outline-none transition-all font-medium text-lg ring-1 ring-gray-200 focus:ring-2 focus:ring-apple-blue/50"
-                    placeholder="Search by country (e.g. Cambodia)..."
+                    className="block w-full pl-12 pr-4 py-4 bg-white rounded-2xl border-0 text-apple-text placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue/50 transition-all font-medium text-lg ring-1 ring-gray-200"
+                    placeholder="Search by country (e.g. Cambodia)…"
                     value={location}
                     onChange={(e) => onLocationChange(e.target.value)}
                     autoComplete="off"
+                    aria-label="Search by location"
                 />
                 <div className="absolute inset-y-2 right-2">
                     <button

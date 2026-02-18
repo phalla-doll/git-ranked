@@ -20,11 +20,7 @@ export function SortOptions({ sortBy, onSortChange }: SortOptionsProps) {
                     key={option.id}
                     type="button"
                     onClick={() => onSortChange(option.id)}
-                    className={`flex-1 md:flex-none px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 ease-out whitespace-nowrap ${
-                        sortBy === option.id
-                            ? "bg-white text-apple-text shadow-sm"
-                            : "text-gray-500 hover:text-gray-900"
-                    }`}
+                    className={`flex-1 md:flex-none px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 ease-out whitespace-nowrap min-h-11 ${sortBy === option.id ? "bg-white text-apple-text shadow-sm" : "text-gray-500 hover:text-gray-900"}`}
                 >
                     {option.label}
                 </button>

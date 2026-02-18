@@ -53,12 +53,13 @@ export function PageFooter({
                         />
                         <input
                             type="text"
-                            placeholder="Find user..."
+                            placeholder="Find user…"
                             className="bg-transparent border-none focus:outline-none text-sm w-full text-apple-text placeholder-gray-400 font-medium"
                             value={userSearchQuery}
                             onChange={(e) => onUserSearchChange(e.target.value)}
                             onKeyDown={onUserSearchKeyDown}
                             disabled={isSearchingUser}
+                            aria-label="Search for a user"
                         />
                         {isSearchingUser && (
                             <HugeiconsIcon

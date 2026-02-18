@@ -43,15 +43,17 @@ export function ApiKeyPanel({
                     <div className="relative w-full md:w-80">
                         <input
                             type={showToken ? "text" : "password"}
-                            placeholder="ghp_..."
+                            placeholder="ghp_…"
                             value={apiKey}
                             onChange={(e) => onApiKeyChange(e.target.value)}
-                            className="bg-gray-50 border border-gray-200 rounded-lg pl-4 pr-10 py-2 text-sm w-full focus:outline-none focus:border-apple-blue focus:ring-1 focus:ring-apple-blue transition-all"
+                            className="bg-gray-50 border border-gray-200 rounded-lg pl-4 pr-10 py-2.5 text-sm w-full focus:outline-none focus-visible:border-apple-blue focus-visible:ring-1 focus-visible:ring-apple-blue transition-all"
+                            aria-label="GitHub Access Token"
                         />
                         <button
                             type="button"
                             onClick={onToggleShowToken}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                            aria-label={showToken ? "Hide token" : "Show token"}
                         >
                             <HugeiconsIcon
                                 icon={EyeIcon}
@@ -64,7 +66,7 @@ export function ApiKeyPanel({
                     <button
                         type="button"
                         onClick={onSave}
-                        className="bg-black hover:bg-gray-800 text-white rounded-lg px-6 py-2 text-sm font-medium transition-colors"
+                        className="bg-black hover:bg-gray-800 text-white rounded-lg px-6 py-2.5 text-sm font-medium transition-colors min-h-11"
                     >
                         Save
                     </button>

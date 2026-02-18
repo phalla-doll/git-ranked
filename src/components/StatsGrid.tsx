@@ -117,16 +117,16 @@ export function StatsGrid({ totalCount, users, sortBy }: StatsGridProps) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 bg-white rounded-3xl border border-gray-200 divide-y md:divide-y-0 md:divide-x divide-gray-200 shadow-sm overflow-hidden">
-            <div className="p-8">
+            <div className="p-6 md:p-8">
                 <StatCard
                     label="Total Developers"
                     value={totalCount ? totalCount.toLocaleString() : "-"}
                 />
             </div>
-            <div className="p-8">
+            <div className="p-6 md:p-8">
                 <StatCard label={stat2.label} value={stat2.value} />
             </div>
-            <div className="p-8">
+            <div className="p-6 md:p-8">
                 <StatCard label={stat3.label} value={stat3.value} />
             </div>
         </div>
