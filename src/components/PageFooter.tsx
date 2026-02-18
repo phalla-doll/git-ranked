@@ -73,7 +73,7 @@ export function PageFooter({
 
             <div className="mt-10 pt-6 border-t border-gray-100 text-center">
                 <p className="text-xs text-gray-500">
-                    Created as a hobby and maintained by{" "}
+                    Crafted for fun and kept alive by{" "}
                     <a
                         href="https://manthaa.dev/"
                         target="_blank"
