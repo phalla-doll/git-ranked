@@ -1,4 +1,4 @@
-import { Search01Icon } from "@hugeicons/core-free-icons";
+import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useRef } from "react";
 
@@ -6,6 +6,8 @@ interface LocationSearchProps {
     location: string;
     suggestions: string[];
     showSuggestions: boolean;
+    validationError?: string | null;
+    isValidating?: boolean;
     onLocationChange: (value: string) => void;
     onSearch: () => void;
     onLocationFocus: () => void;
@@ -16,6 +18,8 @@ export function LocationSearch({
     location,
     suggestions,
     showSuggestions,
+    validationError,
+    isValidating,
     onLocationChange,
     onSearch,
     onLocationFocus,
@@ -43,19 +47,38 @@ export function LocationSearch({
                 </div>
                 <input
                     type="text"
-                    className="block w-full pl-12 pr-4 py-4 bg-white rounded-2xl border-0 ring-1 ring-gray-200 text-apple-text placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-apple-blue/50 transition-all font-medium text-lg"
+                    className={`block w-full pl-12 pr-4 py-4 bg-white rounded-2xl border-0 text-apple-text placeholder-gray-400 focus:outline-none transition-all font-medium text-lg ${
+                        validationError
+                            ? "ring-2 ring-red-400 focus:ring-red-400"
+                            : "ring-1 ring-gray-200 focus:ring-2 focus:ring-apple-blue/50"
+                    }`}
                     placeholder="Search by location (e.g. Phnom Penh)..."
                     value={location}
                     onChange={(e) => onLocationChange(e.target.value)}
                     onFocus={onLocationFocus}
                     autoComplete="off"
+                    disabled={isValidating}
                 />
                 <div className="absolute inset-y-2 right-2">
                     <button
                         type="submit"
-                        className="h-full px-6 bg-apple-blue hover:bg-apple-blueHover text-white rounded-xl text-sm font-medium transition-colors shadow-lg shadow-blue-500/20"
+                        disabled={isValidating}
+                        className="h-full px-6 bg-apple-blue hover:bg-apple-blueHover text-white rounded-xl text-sm font-medium transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        Search
+                        {isValidating ? (
+                            <>
+                                <HugeiconsIcon
+                                    icon={Loading03Icon}
+                                    size={16}
+                                    color="currentColor"
+                                    className="animate-spin"
+                                    strokeWidth={2}
+                                />
+                                Validating...
+                            </>
+                        ) : (
+                            "Search"
+                        )}
                     </button>
                 </div>
 
@@ -80,6 +103,12 @@ export function LocationSearch({
                     </ul>
                 )}
             </div>
+
+            {validationError && (
+                <p className="mt-2 text-sm text-red-500 px-1">
+                    {validationError}
+                </p>
+            )}
         </form>
     );
 }

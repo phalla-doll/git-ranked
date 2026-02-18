@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -15,12 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     metadataBase: new URL("https://git-ranked-cambodia.vercel.app/"),
     title: "GitRanked Cambodia - Developer Leaderboard",
-    description:
-        "Find the most cracked devs in your local dev community.",
+    description: "Find the most cracked devs in your local dev community.",
     openGraph: {
         title: "GitRanked Cambodia - Developer Leaderboard",
-        description:
-            "Find the most cracked devs in your local dev community.",
+        description: "Find the most cracked devs in your local dev community.",
         url: "https://git-ranked-cambodia.vercel.app/",
         images: [
             {
@@ -41,11 +40,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                {children}
+                <ThemeProvider>{children}</ThemeProvider>
             </body>
         </html>
     );

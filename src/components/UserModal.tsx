@@ -78,7 +78,7 @@ export const UserModal = ({
                                 >
                                     <HugeiconsIcon
                                         icon={Github01Icon}
-                                        size={14}
+                                        size={18}
                                         color="white"
                                         strokeWidth={1.5}
                                     />

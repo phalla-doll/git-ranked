@@ -15,11 +15,13 @@ import { useApiKey } from "@/hooks/useApiKey";
 import { useLocationSuggestions } from "@/hooks/useLocationSuggestions";
 import { useUsers } from "@/hooks/useUsers";
 import { getUserByName } from "@/lib/services/githubService";
+import { formatLocationName } from "@/lib/services/locationService";
 import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
 
 function GitRankedClient() {
     const [location, setLocation] = useState("Cambodia");
+    const [inputValue, setInputValue] = useState("Cambodia");
     const [sortBy, setSortBy] = useState<SortOption>(SortOption.FOLLOWERS);
     const [page, setPage] = useState(1);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -32,6 +34,9 @@ function GitRankedClient() {
     const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
     const [showPromoModal, setShowPromoModal] = useState(false);
     const [isPending, _startTransition] = useTransition();
+    const [validationError, setValidationError] = useState<string | null>(null);
+    const [isValidating, setIsValidating] = useState(false);
+    const [wasSuggestionSelected, setWasSuggestionSelected] = useState(false);
     const inputWrapperRef = useRef<HTMLDivElement>(null);
 
     const { apiKey, setApiKey, saveApiKey } = useApiKey();
@@ -50,6 +55,7 @@ function GitRankedClient() {
         showSuggestions,
         setShowSuggestions,
         handleLocationChange,
+        resolveLocation,
     } = useLocationSuggestions();
 
     useEffect(() => {
@@ -86,21 +92,59 @@ function GitRankedClient() {
         return () => clearTimeout(timer);
     }, [apiKey]);
 
-    const handleSearch = () => {
-        setPage(1);
+    const handleSearch = async () => {
+        setValidationError(null);
+
+        if (!inputValue.trim()) {
+            setValidationError("Please enter a location");
+            return;
+        }
+
+        if (wasSuggestionSelected) {
+            setPage(1);
+            return;
+        }
+
+        setIsValidating(true);
+        try {
+            const resolved = await resolveLocation(inputValue.trim());
+            if (!resolved) {
+                setValidationError(
+                    "Location not found. Please select from suggestions.",
+                );
+                return;
+            }
+            const formattedLocation = formatLocationName(resolved);
+            setLocation(formattedLocation);
+            setInputValue(formattedLocation);
+            setWasSuggestionSelected(true);
+            setPage(1);
+        } catch (error) {
+            console.error("Error validating location:", error);
+            setValidationError(
+                "Failed to validate location. Please try again.",
+            );
+        } finally {
+            setIsValidating(false);
+        }
     };
 
     const handleLocationChangeWrapper = useCallback(
         (value: string) => {
-            setLocation(value);
+            setInputValue(value);
+            setValidationError(null);
+            setWasSuggestionSelected(false);
             handleLocationChange(value);
         },
         [handleLocationChange],
     );
 
     const handleSelectSuggestion = (suggestion: string) => {
+        setInputValue(suggestion);
         setLocation(suggestion);
         setShowSuggestions(false);
+        setValidationError(null);
+        setWasSuggestionSelected(true);
         setPage(1);
     };
 
@@ -214,14 +258,16 @@ function GitRankedClient() {
                         </p>
                         <div className="relative group" ref={inputWrapperRef}>
                             <LocationSearch
-                                location={location}
+                                location={inputValue}
                                 suggestions={suggestions}
                                 showSuggestions={showSuggestions}
+                                validationError={validationError}
+                                isValidating={isValidating}
                                 onLocationChange={handleLocationChangeWrapper}
                                 onSearch={handleSearch}
                                 onLocationFocus={() => {
                                     if (
-                                        location.trim().length > 0 &&
+                                        inputValue.trim().length > 0 &&
                                         suggestions.length > 0
                                     )
                                         setShowSuggestions(true);
