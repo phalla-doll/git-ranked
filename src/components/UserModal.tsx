@@ -1,9 +1,10 @@
 import {
-    ArrowUpRight01Icon,
-    Building01Icon,
+    OfficeIcon,
+    Calendar01Icon,
     Cancel01Icon,
     Github01Icon,
-    MapPinIcon,
+    Link01Icon,
+    Location01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
@@ -41,7 +42,7 @@ export const UserModal = ({
             <div className="fixed inset-0 z-20 overflow-y-auto pointer-events-none">
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
                     <div className="relative transform overflow-hidden bg-white rounded-3xl shadow-2xl text-left transition-all sm:my-8 w-full max-w-lg animate-in zoom-in-95 duration-200 pointer-events-auto">
-                        <div className="relative h-24 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+                        <div className="relative h-24 bg-linear-to-r from-gray-50 to-white border-b border-gray-100">
                             <button
                                 type="button"
                                 onClick={onClose}
@@ -157,7 +158,7 @@ export const UserModal = ({
                                 {user.location && (
                                     <div className="flex items-center gap-3">
                                         <HugeiconsIcon
-                                            icon={MapPinIcon}
+                                            icon={Location01Icon}
                                             size={16}
                                             color="currentColor"
                                             className="text-gray-400"
@@ -169,7 +170,7 @@ export const UserModal = ({
                                 {user.company && (
                                     <div className="flex items-center gap-3">
                                         <HugeiconsIcon
-                                            icon={Building01Icon}
+                                            icon={OfficeIcon}
                                             size={16}
                                             color="currentColor"
                                             className="text-gray-400"
@@ -181,7 +182,7 @@ export const UserModal = ({
                                 {user.blog && (
                                     <div className="flex items-center gap-3">
                                         <HugeiconsIcon
-                                            icon={ArrowUpRight01Icon}
+                                            icon={Link01Icon}
                                             size={16}
                                             color="currentColor"
                                             className="text-gray-400"
@@ -195,10 +196,31 @@ export const UserModal = ({
                                             }
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-apple-blue hover:underline truncate max-w-[250px]"
+                                            className="text-apple-blue hover:underline truncate max-w-62.5"
                                         >
                                             {user.blog}
                                         </a>
+                                    </div>
+                                )}
+                                {user.created_at && (
+                                    <div className="flex items-center gap-3">
+                                        <HugeiconsIcon
+                                            icon={Calendar01Icon}
+                                            size={16}
+                                            color="currentColor"
+                                            className="text-gray-400"
+                                            strokeWidth={1.5}
+                                        />
+                                        <span>
+                                            Joined{" "}
+                                            {new Date(
+                                                user.created_at,
+                                            ).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })}
+                                        </span>
                                     </div>
                                 )}
                             </div>
