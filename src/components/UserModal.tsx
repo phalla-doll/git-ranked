@@ -3,6 +3,7 @@ import {
     Cancel01Icon,
     Github01Icon,
     Link01Icon,
+    Loading03Icon,
     Location01Icon,
     OfficeIcon,
 } from "@hugeicons/core-free-icons";
@@ -129,7 +130,12 @@ export const UserModal = ({
                                     <div className="text-lg font-medium text-apple-text">
                                         {isLoading ? (
                                             <div className="h-7 flex items-center justify-center">
-                                                <div className="w-4 h-4 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin"></div>
+                                                <HugeiconsIcon
+                                                    icon={Loading03Icon}
+                                                    size={16}
+                                                    color="currentColor"
+                                                    className="text-gray-600 animate-spin"
+                                                />
                                             </div>
                                         ) : user.total_stars !== undefined ? (
                                             user.total_stars.toLocaleString()
