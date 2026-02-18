@@ -22,7 +22,13 @@ export const metadata: Metadata = {
         description:
             "Discover top GitHub developers in Cambodia and beyond. Rank by followers, contributions, and repositories in a modern, minimalist interface.",
         url: "https://git-ranked-cambodia.vercel.app/",
-        images: ["/gitranked-og-main.png"],
+        images: [
+            {
+                url: "https://git-ranked-cambodia.vercel.app/gitranked-og-main.png",
+                width: 1200,
+                height: 630,
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
