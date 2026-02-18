@@ -43,6 +43,7 @@ function GitRankedClient() {
         totalCount,
         rateLimitHit,
         rateLimitResetAt,
+        hasNextPage,
         loadingProgress,
     } = useUsers(location, sortBy, page, apiKey, refreshKey);
     const {
@@ -155,6 +156,12 @@ function GitRankedClient() {
 
     const handleRefresh = useCallback(() => {
         setRefreshKey((prev) => prev + 1);
+        setPage(1);
+    }, []);
+
+    const handleSortChange = useCallback((sort: SortOption) => {
+        setSortBy(sort);
+        setPage(1);
     }, []);
 
     const getListTitle = () => {
@@ -233,7 +240,10 @@ function GitRankedClient() {
                             {getListTitle()}
                         </h2>
 
-                        <SortOptions sortBy={sortBy} onSortChange={setSortBy} />
+                        <SortOptions
+                            sortBy={sortBy}
+                            onSortChange={handleSortChange}
+                        />
                     </div>
 
                     <LeaderboardTable
@@ -272,7 +282,7 @@ function GitRankedClient() {
                     {users.length > 0 && (
                         <PaginationControls
                             page={page}
-                            usersCount={users.length}
+                            hasNextPage={hasNextPage}
                             loading={loading}
                             onPageChange={setPage}
                         />

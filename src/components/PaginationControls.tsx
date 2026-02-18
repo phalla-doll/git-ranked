@@ -3,14 +3,14 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 interface PaginationControlsProps {
     page: number;
-    usersCount: number;
+    hasNextPage: boolean;
     loading: boolean;
     onPageChange: (page: number) => void;
 }
 
 export function PaginationControls({
     page,
-    usersCount,
+    hasNextPage,
     loading,
     onPageChange,
 }: PaginationControlsProps) {
@@ -35,7 +35,7 @@ export function PaginationControls({
             <button
                 type="button"
                 onClick={() => onPageChange(page + 1)}
-                disabled={usersCount < 50 || loading}
+                disabled={!hasNextPage || loading}
                 className="p-2 text-gray-400 hover:text-apple-text disabled:opacity-30 disabled:hover:text-gray-400 transition-colors"
             >
                 <HugeiconsIcon

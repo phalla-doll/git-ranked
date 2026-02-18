@@ -34,7 +34,18 @@ export function useUsers(
     } | null>(null);
 
     const cursorsRef = useRef<Record<number, string>>({});
+    const pagesCacheRef = useRef<Record<number, GitHubUserDetail[]>>({});
+    const hasNextPageCacheRef = useRef<Record<number, boolean>>({});
     const contributionCacheRef = useRef<ContributionCache | null>(null);
+    const pageRef = useRef(page);
+    const locationRef = useRef(location);
+    const sortByRef = useRef(sortBy);
+    const apiKeyRef = useRef(apiKey);
+
+    pageRef.current = page;
+    locationRef.current = location;
+    sortByRef.current = sortBy;
+    apiKeyRef.current = apiKey;
 
     const isContributionSort = sortBy === SO.CONTRIBUTIONS;
 
@@ -54,10 +65,10 @@ export function useUsers(
         try {
             while (totalFetched < MAX_CONTRIBUTION_USERS) {
                 const result = await searchUsersInLocation(
-                    location,
+                    locationRef.current,
                     SO.FOLLOWERS,
                     1,
-                    apiKey,
+                    apiKeyRef.current,
                     cursor || undefined,
                 );
 
@@ -100,7 +111,7 @@ export function useUsers(
             );
 
             contributionCacheRef.current = {
-                location,
+                location: locationRef.current,
                 users: sortedUsers,
                 totalCount: sortedUsers.length,
             };
@@ -117,11 +128,10 @@ export function useUsers(
             setLoading(false);
             setLoadingProgress(null);
         }
-    }, [location, apiKey]);
+    }, []);
 
-    const fetchPaginatedUsers = useCallback(async () => {
+    const fetchPaginatedUsers = useCallback(async (pageNum: number) => {
         setLoading(true);
-        setUsers([]);
         setError(null);
         setRateLimitHit(false);
         setRateLimitResetAt(null);
@@ -136,16 +146,19 @@ export function useUsers(
                 hasNextPage: hasNext,
                 endCursor,
             } = await searchUsersInLocation(
-                location,
-                sortBy,
-                page,
-                apiKey,
-                cursorsRef.current[page - 1],
+                locationRef.current,
+                sortByRef.current,
+                pageNum,
+                apiKeyRef.current,
+                cursorsRef.current[pageNum - 1],
             );
 
             if (apiError) {
                 setError(apiError);
             } else {
+                pagesCacheRef.current[pageNum] = fetchedUsers;
+                hasNextPageCacheRef.current[pageNum] = hasNext;
+
                 setUsers(fetchedUsers);
                 setTotalCount(total_count);
                 setRateLimitHit(rateLimited);
@@ -155,7 +168,7 @@ export function useUsers(
                 if (endCursor && hasNext) {
                     cursorsRef.current = {
                         ...cursorsRef.current,
-                        [page]: endCursor,
+                        [pageNum]: endCursor,
                     };
                 }
             }
@@ -167,10 +180,13 @@ export function useUsers(
         } finally {
             setLoading(false);
         }
-    }, [location, page, sortBy, apiKey]);
+    }, []);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: sortBy and refreshTrigger intentionally trigger re-fetch when they change
     useEffect(() => {
         cursorsRef.current = {};
+        pagesCacheRef.current = {};
+        hasNextPageCacheRef.current = {};
         const cached = contributionCacheRef.current;
 
         if (cached && cached.location === location) {
@@ -182,16 +198,14 @@ export function useUsers(
 
         contributionCacheRef.current = null;
 
-        // refreshTrigger forces re-fetch when changed (e.g., after rate limit reset)
-        void refreshTrigger;
-
         if (isContributionSort) {
             fetchAllUsersForContributions();
         } else {
-            fetchPaginatedUsers();
+            fetchPaginatedUsers(1);
         }
     }, [
         location,
+        sortBy,
         isContributionSort,
         fetchAllUsersForContributions,
         fetchPaginatedUsers,
@@ -207,8 +221,16 @@ export function useUsers(
                 setUsers(cached.users.slice(startIndex, endIndex));
                 setHasNextPage(endIndex < cached.users.length);
             }
+        } else {
+            const cachedPage = pagesCacheRef.current[page];
+            if (cachedPage) {
+                setUsers(cachedPage);
+                setHasNextPage(hasNextPageCacheRef.current[page] ?? false);
+            } else {
+                fetchPaginatedUsers(page);
+            }
         }
-    }, [page, isContributionSort]);
+    }, [page, isContributionSort, fetchPaginatedUsers]);
 
     return {
         users,
