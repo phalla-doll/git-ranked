@@ -151,18 +151,20 @@ export const LeaderboardTable = memo(
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50/50 border-b border-gray-200/60 text-xs font-medium tracking-wide text-gray-500 uppercase">
-                                <th className="px-6 py-4 w-20 text-center">
+                            <tr className="bg-gray-50/50 border-b border-gray-200/60">
+                                <th className="px-6 py-4 w-20 text-center text-xs font-normal tracking-wide text-gray-500 uppercase">
                                     Rank
                                 </th>
-                                <th className="px-6 py-4">Developer</th>
-                                <th className="px-6 py-4 text-right w-32 hidden sm:table-cell">
+                                <th className="px-6 py-4  text-xs font-normal tracking-wide text-gray-500 uppercase">
+                                    Developer
+                                </th>
+                                <th className="px-6 py-4 text-right w-32 hidden sm:table-cell  text-xs font-normal tracking-wide text-gray-500 uppercase">
                                     Followers
                                 </th>
-                                <th className="px-6 py-4 text-right w-32 hidden md:table-cell">
+                                <th className="px-6 py-4 text-right w-32 hidden md:table-cell  text-xs font-normal tracking-wide text-gray-500 uppercase">
                                     Repos
                                 </th>
-                                <th className="px-6 py-4 text-right w-32 hidden lg:table-cell">
+                                <th className="px-6 py-4 text-right w-32 hidden lg:table-cell  text-xs font-normal tracking-wide text-gray-500 uppercase">
                                     Contribs
                                 </th>
                                 <th className="px-6 py-4 w-12"></th>
