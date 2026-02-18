@@ -1,7 +1,13 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import {
+    Suspense,
+    useCallback,
+    useEffect,
+    useState,
+    useTransition,
+} from "react";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { LocationSearch } from "@/components/LocationSearch";
 import { PageFooter } from "@/components/PageFooter";
@@ -287,4 +293,18 @@ function GitRankedClient() {
     );
 }
 
-export default GitRankedClient;
+function LoadingFallback() {
+    return (
+        <div className="min-h-screen font-sans text-apple-text bg-apple-bg flex items-center justify-center">
+            <div className="animate-pulse text-gray-400">Loading...</div>
+        </div>
+    );
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={<LoadingFallback />}>
+            <GitRankedClient />
+        </Suspense>
+    );
+}
