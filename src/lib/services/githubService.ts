@@ -17,6 +17,7 @@ const searchCache = new LRUCache<
         users: GitHubUserDetail[];
         total_count: number;
         rateLimited: boolean;
+        resetAt?: number;
         error?: string;
     }
 >({
@@ -195,6 +196,7 @@ export const searchUsersInLocation = cache(
         hasNextPage: boolean;
         endCursor: string | null;
         rateLimited: boolean;
+        resetAt?: number;
         error?: string;
     }> => {
         const cacheKey = `${query}:${sort}:${page}:${after || "none"}:${apiKey ? "user-key" : "server-key"}`;
@@ -206,6 +208,7 @@ export const searchUsersInLocation = cache(
                 hasNextPage: boolean;
                 endCursor: string | null;
                 rateLimited: boolean;
+                resetAt?: number;
                 error?: string;
             };
         }
@@ -232,6 +235,7 @@ export const searchUsersInLocation = cache(
                 hasNextPage: result.hasNextPage || false,
                 endCursor: result.endCursor || null,
                 rateLimited: result.rateLimited || false,
+                resetAt: result.resetAt,
                 error: result.error,
             };
 

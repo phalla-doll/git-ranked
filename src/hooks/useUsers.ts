@@ -17,12 +17,16 @@ export function useUsers(
     sortBy: SortOption,
     page: number,
     apiKey: string,
+    refreshTrigger: number = 0,
 ) {
     const [users, setUsers] = useState<GitHubUserDetail[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalCount, setTotalCount] = useState(0);
     const [rateLimitHit, setRateLimitHit] = useState(false);
+    const [rateLimitResetAt, setRateLimitResetAt] = useState<number | null>(
+        null,
+    );
     const [hasNextPage, setHasNextPage] = useState(false);
     const [loadingProgress, setLoadingProgress] = useState<{
         current: number;
@@ -39,6 +43,7 @@ export function useUsers(
         setUsers([]);
         setError(null);
         setRateLimitHit(false);
+        setRateLimitResetAt(null);
         setLoadingProgress({ current: 0, total: 0 });
 
         const allUsers: GitHubUserDetail[] = [];
@@ -63,6 +68,7 @@ export function useUsers(
 
                 if (result.rateLimited) {
                     setRateLimitHit(true);
+                    setRateLimitResetAt(result.resetAt || null);
                     setError(
                         "API rate limit exceeded. Please try again later.",
                     );
@@ -118,12 +124,14 @@ export function useUsers(
         setUsers([]);
         setError(null);
         setRateLimitHit(false);
+        setRateLimitResetAt(null);
 
         try {
             const {
                 users: fetchedUsers,
                 total_count,
                 rateLimited,
+                resetAt,
                 error: apiError,
                 hasNextPage: hasNext,
                 endCursor,
@@ -141,6 +149,7 @@ export function useUsers(
                 setUsers(fetchedUsers);
                 setTotalCount(total_count);
                 setRateLimitHit(rateLimited);
+                setRateLimitResetAt(resetAt || null);
                 setHasNextPage(hasNext);
 
                 if (endCursor && hasNext) {
@@ -173,6 +182,9 @@ export function useUsers(
 
         contributionCacheRef.current = null;
 
+        // refreshTrigger forces re-fetch when changed (e.g., after rate limit reset)
+        void refreshTrigger;
+
         if (isContributionSort) {
             fetchAllUsersForContributions();
         } else {
@@ -183,6 +195,7 @@ export function useUsers(
         isContributionSort,
         fetchAllUsersForContributions,
         fetchPaginatedUsers,
+        refreshTrigger,
     ]);
 
     useEffect(() => {
@@ -203,6 +216,7 @@ export function useUsers(
         error,
         totalCount,
         rateLimitHit,
+        rateLimitResetAt,
         hasNextPage,
         loadingProgress,
     };

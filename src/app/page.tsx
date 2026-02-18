@@ -23,6 +23,7 @@ function GitRankedClient() {
     const [location, setLocation] = useState("Cambodia");
     const [sortBy, setSortBy] = useState<SortOption>(SortOption.FOLLOWERS);
     const [page, setPage] = useState(1);
+    const [refreshKey, setRefreshKey] = useState(0);
     const [showKeyInput, setShowKeyInput] = useState(false);
     const [showToken, setShowToken] = useState(false);
     const [userSearchQuery, setUserSearchQuery] = useState("");
@@ -35,8 +36,15 @@ function GitRankedClient() {
     const inputWrapperRef = useRef<HTMLDivElement>(null);
 
     const { apiKey, setApiKey, saveApiKey } = useApiKey();
-    const { users, loading, error, totalCount, rateLimitHit, loadingProgress } =
-        useUsers(location, sortBy, page, apiKey);
+    const {
+        users,
+        loading,
+        error,
+        totalCount,
+        rateLimitHit,
+        rateLimitResetAt,
+        loadingProgress,
+    } = useUsers(location, sortBy, page, apiKey, refreshKey);
     const {
         suggestions,
         showSuggestions,
@@ -145,6 +153,10 @@ function GitRankedClient() {
         setShowPromoModal(false);
     };
 
+    const handleRefresh = useCallback(() => {
+        setRefreshKey((prev) => prev + 1);
+    }, []);
+
     const getListTitle = () => {
         switch (sortBy) {
             case SortOption.FOLLOWERS:
@@ -164,7 +176,9 @@ function GitRankedClient() {
         <div className="min-h-screen font-sans text-apple-text bg-apple-bg selection:bg-apple-blue selection:text-white pb-20">
             <RateLimitBanner
                 rateLimitHit={rateLimitHit}
+                resetAt={rateLimitResetAt}
                 onAddKey={() => setShowKeyInput(true)}
+                onRefresh={handleRefresh}
             />
 
             <PageNavigation
