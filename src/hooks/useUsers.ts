@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { searchUsersInLocation } from "@/lib/services/githubService";
 import type { GitHubUserDetail, SortOption } from "@/types";
 
@@ -13,7 +13,7 @@ export function useUsers(
     const [error, setError] = useState<string | null>(null);
     const [totalCount, setTotalCount] = useState(0);
     const [rateLimitHit, setRateLimitHit] = useState(false);
-    const [cursors, setCursors] = useState<Record<number, string>>({});
+    const cursorsRef = useRef<Record<number, string>>({});
     const [hasNextPage, setHasNextPage] = useState(false);
 
     useEffect(() => {
@@ -35,7 +35,7 @@ export function useUsers(
                     sortBy,
                     page,
                     apiKey,
-                    cursors[page - 1],
+                    cursorsRef.current[page - 1],
                 );
 
                 if (apiError) {
@@ -47,10 +47,10 @@ export function useUsers(
                     setHasNextPage(hasNext);
 
                     if (endCursor && hasNext) {
-                        setCursors((prev) => ({
-                            ...prev,
+                        cursorsRef.current = {
+                            ...cursorsRef.current,
                             [page]: endCursor,
-                        }));
+                        };
                     }
                 }
             } catch (error) {
@@ -64,7 +64,7 @@ export function useUsers(
         };
 
         fetch();
-    }, [location, page, sortBy, apiKey, cursors]);
+    }, [location, page, sortBy, apiKey]);
 
     return {
         users,

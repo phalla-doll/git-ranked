@@ -173,7 +173,11 @@ export const LeaderboardTable = memo(
                                 const currentRank = baseRank + index + 1;
                                 return (
                                     <tr
-                                        key={user.id}
+                                        key={
+                                            user.login ||
+                                            user.id ||
+                                            `user-${index}`
+                                        }
                                         onClick={() => onUserClick(user)}
                                         className="group hover:bg-blue-50/30 transition-colors duration-200 cursor-pointer"
                                     >
@@ -185,8 +189,14 @@ export const LeaderboardTable = memo(
                                             <div className="flex items-center gap-4">
                                                 <div className="relative shrink-0">
                                                     <Image
-                                                        src={user.avatar_url}
-                                                        alt={user.login}
+                                                        src={
+                                                            user.avatar_url ||
+                                                            `https://ui-avatars.com/api/?name=${user.login}&background=random`
+                                                        }
+                                                        alt={
+                                                            user.login ||
+                                                            "User avatar"
+                                                        }
                                                         width={40}
                                                         height={40}
                                                         className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 object-cover shadow-sm group-hover:scale-105 transition-transform"

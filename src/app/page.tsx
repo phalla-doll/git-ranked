@@ -29,6 +29,7 @@ function GitRankedClient() {
     const [isSearchingUser, setIsSearchingUser] = useState(false);
     const [modalUser, setModalUser] = useState<GitHubUserDetail | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
     const [showPromoModal, setShowPromoModal] = useState(false);
     const [isPending, _startTransition] = useTransition();
     const inputWrapperRef = useRef<HTMLDivElement>(null);
@@ -229,9 +230,26 @@ function GitRankedClient() {
                         loading={isPending || loading}
                         error={error}
                         page={page}
-                        onUserClick={(user) => {
+                        onUserClick={async (user) => {
                             setModalUser(user);
                             setIsModalOpen(true);
+                            setIsLoadingUserDetail(true);
+                            try {
+                                const fullUser = await getUserByName(
+                                    user.login,
+                                    apiKey,
+                                );
+                                if (fullUser) {
+                                    setModalUser(fullUser);
+                                }
+                            } catch (err) {
+                                console.error(
+                                    "Failed to fetch user details:",
+                                    err,
+                                );
+                            } finally {
+                                setIsLoadingUserDetail(false);
+                            }
                         }}
                     />
 
@@ -251,6 +269,7 @@ function GitRankedClient() {
             <UserModal
                 user={modalUser}
                 isOpen={isModalOpen}
+                isLoading={isLoadingUserDetail}
                 onClose={() => setIsModalOpen(false)}
             />
 

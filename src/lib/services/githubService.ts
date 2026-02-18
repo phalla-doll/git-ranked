@@ -287,7 +287,10 @@ const searchUsersInLocationGraphQL = async (
 
         const result = await response.json();
 
-        if (result.errors) {
+        const searchResult = result.data?.search;
+        const edges = searchResult?.edges || [];
+
+        if (result.errors && (!searchResult || edges.length === 0)) {
             console.warn("GraphQL search errors:", result.errors);
             return {
                 users: [],
@@ -299,13 +302,18 @@ const searchUsersInLocationGraphQL = async (
             };
         }
 
-        const searchResult = result.data.search;
-        const edges = searchResult.edges || [];
+        if (result.errors) {
+            console.warn(
+                "GraphQL warnings (data still returned):",
+                result.errors,
+            );
+        }
 
-        const tempUsers: (GitHubUserDetail | null)[] = [];
+        const tempUsers: GitHubUserDetail[] = [];
         for (const edge of edges) {
             const node = edge.node;
-            if (!node) continue;
+            if (!node || !node.databaseId || !node.login || !node.avatarUrl)
+                continue;
 
             const user: GitHubUserDetail = {
                 login: node.login,
