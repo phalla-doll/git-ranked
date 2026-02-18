@@ -191,7 +191,11 @@ function GitRankedClient() {
                     </div>
                 </div>
 
-                <StatsGrid totalCount={totalCount} users={users} />
+                <StatsGrid
+                    totalCount={totalCount}
+                    users={users}
+                    sortBy={sortBy}
+                />
 
                 <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-1 gap-4">
