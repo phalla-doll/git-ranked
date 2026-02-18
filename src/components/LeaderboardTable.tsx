@@ -18,6 +18,7 @@ interface LeaderboardTableProps {
     loading: boolean;
     error?: string | null;
     page: number;
+    loadingProgress?: { current: number; total: number } | null;
     onUserClick: (user: GitHubUserDetail) => void;
 }
 
@@ -76,6 +77,7 @@ export const LeaderboardTable = memo(
         loading,
         error,
         page,
+        loadingProgress,
         onUserClick,
     }: LeaderboardTableProps) => {
         if (loading && users.length === 0) {
@@ -89,10 +91,14 @@ export const LeaderboardTable = memo(
                             className="text-gray-400 animate-spin mb-4"
                         />
                         <p className="text-apple-text font-medium text-lg">
-                            Loading profiles...
+                            {loadingProgress
+                                ? `Fetching all users... ${loadingProgress.current}/${loadingProgress.total}`
+                                : "Loading profiles..."}
                         </p>
                         <p className="text-apple-gray text-sm mt-1">
-                            Analyzing GitHub data.
+                            {loadingProgress
+                                ? "Sorting by contributions."
+                                : "Analyzing GitHub data."}
                         </p>
                     </div>
                 </div>

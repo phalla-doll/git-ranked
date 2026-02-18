@@ -58,6 +58,7 @@ export enum SortOption {
     FOLLOWERS = "followers",
     REPOS = "repositories",
     JOINED = "joined",
+    CONTRIBUTIONS = "contributions",
 }
 
 export interface AppState {

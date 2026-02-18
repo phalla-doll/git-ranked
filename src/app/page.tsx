@@ -35,12 +35,8 @@ function GitRankedClient() {
     const inputWrapperRef = useRef<HTMLDivElement>(null);
 
     const { apiKey, setApiKey, saveApiKey } = useApiKey();
-    const { users, loading, error, totalCount, rateLimitHit } = useUsers(
-        location,
-        sortBy,
-        page,
-        apiKey,
-    );
+    const { users, loading, error, totalCount, rateLimitHit, loadingProgress } =
+        useUsers(location, sortBy, page, apiKey);
     const {
         suggestions,
         showSuggestions,
@@ -157,6 +153,8 @@ function GitRankedClient() {
                 return "Top Profiles by Repositories";
             case SortOption.JOINED:
                 return "Newest Members";
+            case SortOption.CONTRIBUTIONS:
+                return "Top Contributors";
             default:
                 return "Top Profiles";
         }
@@ -230,6 +228,7 @@ function GitRankedClient() {
                         loading={isPending || loading}
                         error={error}
                         page={page}
+                        loadingProgress={loadingProgress}
                         onUserClick={async (user) => {
                             setModalUser(user);
                             setIsModalOpen(true);

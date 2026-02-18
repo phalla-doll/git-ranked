@@ -9,6 +9,7 @@ export function SortOptions({ sortBy, onSortChange }: SortOptionsProps) {
     const options = [
         { id: SortOption.FOLLOWERS, label: "Followers" },
         { id: SortOption.REPOS, label: "Repositories" },
+        { id: SortOption.CONTRIBUTIONS, label: "Contributions" },
         { id: SortOption.JOINED, label: "Newest" },
     ] as const;
 
