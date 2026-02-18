@@ -30,12 +30,16 @@ function GitRankedClient() {
     const [modalUser, setModalUser] = useState<GitHubUserDetail | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showPromoModal, setShowPromoModal] = useState(false);
-    const [isPending, startTransition] = useTransition();
+    const [isPending, _startTransition] = useTransition();
     const inputWrapperRef = useRef<HTMLDivElement>(null);
 
     const { apiKey, setApiKey, saveApiKey } = useApiKey();
-    const { users, loading, error, totalCount, rateLimitHit, fetchUsers } =
-        useUsers(location, sortBy, page, apiKey);
+    const { users, loading, error, totalCount, rateLimitHit } = useUsers(
+        location,
+        sortBy,
+        page,
+        apiKey,
+    );
     const {
         suggestions,
         showSuggestions,
@@ -79,9 +83,6 @@ function GitRankedClient() {
 
     const handleSearch = () => {
         setPage(1);
-        startTransition(() => {
-            fetchUsers(location, 1);
-        });
     };
 
     const handleLocationChangeWrapper = useCallback(
@@ -96,9 +97,6 @@ function GitRankedClient() {
         setLocation(suggestion);
         setShowSuggestions(false);
         setPage(1);
-        startTransition(() => {
-            fetchUsers(suggestion, 1);
-        });
     };
 
     const handleUserSearchKeyDown = async (
@@ -131,9 +129,6 @@ function GitRankedClient() {
         saveApiKey();
         setShowKeyInput(false);
         setPage(1);
-        startTransition(() => {
-            fetchUsers(location, 1);
-        });
     };
 
     const handleClosePromo = (hideForToday: boolean) => {
