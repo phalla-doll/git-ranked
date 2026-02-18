@@ -238,7 +238,7 @@ const searchUsersInLocationGraphQL = async (
               followers { totalCount }
               following { totalCount }
               gists(privacy: PUBLIC) { totalCount }
-              repositories(affiliations: [OWNER]) { totalCount }
+              repositories(ownerAffiliations: OWNER) { totalCount }
               contributionsCollection {
                 contributionCalendar { totalContributions }
               }
