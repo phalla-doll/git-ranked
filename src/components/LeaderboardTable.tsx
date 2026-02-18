@@ -82,7 +82,7 @@ export const LeaderboardTable = memo(
     }: LeaderboardTableProps) => {
         if (loading && users.length === 0) {
             return (
-                <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-[400px]">
+                <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-100">
                     <div className="flex flex-col items-center">
                         <HugeiconsIcon
                             icon={Loading03Icon}
@@ -107,7 +107,7 @@ export const LeaderboardTable = memo(
 
         if (error) {
             return (
-                <div className="bg-white rounded-2xl border border-red-100 flex flex-col items-center justify-center min-h-[400px]">
+                <div className="bg-white rounded-2xl border border-red-100 flex flex-col items-center justify-center min-h-100">
                     <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mb-4">
                         <HugeiconsIcon
                             icon={AlertDiamondIcon}
@@ -128,7 +128,7 @@ export const LeaderboardTable = memo(
 
         if (users.length === 0) {
             return (
-                <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-[400px]">
+                <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-100">
                     <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                         <HugeiconsIcon
                             icon={Search01Icon}
@@ -151,7 +151,7 @@ export const LeaderboardTable = memo(
         const baseRank = (page - 1) * 100;
 
         return (
-            <div className="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden relative min-h-[500px]">
+            <div className="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden relative min-h-125">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
@@ -232,7 +232,7 @@ export const LeaderboardTable = memo(
                                                             user.location) && (
                                                             <>
                                                                 <span className="w-0.5 h-0.5 bg-gray-300 rounded-full"></span>
-                                                                <span className="text-[10px] text-gray-400 truncate max-w-[150px] hidden sm:block">
+                                                                <span className="text-[10px] text-gray-400 truncate max-w-37.5 hidden sm:block">
                                                                     {user.company ||
                                                                         user.location}
                                                                 </span>
