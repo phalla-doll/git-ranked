@@ -246,7 +246,7 @@ export async function POST(request: Request) {
     const result = await searchUsersGraphQL(
         query,
         sort,
-        50,
+        60,
         cursor || null,
         token,
     );
