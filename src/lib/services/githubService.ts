@@ -351,12 +351,7 @@ const searchUsersInLocationGraphQL = async (
               followers { totalCount }
               following { totalCount }
               gists(privacy: PUBLIC) { totalCount }
-              repositories(affiliations: [OWNER], first: 30, orderBy: {field: STARGAZERS, direction: DESC}) {
-                totalCount
-                nodes {
-                  stargazerCount
-                }
-              }
+              repositories(affiliations: [OWNER]) { totalCount }
               contributionsCollection {
                 contributionCalendar { totalContributions }
               }
@@ -425,13 +420,6 @@ const searchUsersInLocationGraphQL = async (
             const node = edge.node;
             if (!node) continue;
 
-            const totalStars =
-                node.repositories?.nodes?.reduce(
-                    (acc: number, repo: GraphQLRepositoryNode) =>
-                        acc + (repo.stargazerCount || 0),
-                    0,
-                ) || 0;
-
             const user: GitHubUserDetail = {
                 login: node.login,
                 id: node.databaseId,
@@ -451,7 +439,7 @@ const searchUsersInLocationGraphQL = async (
                 recent_activity_count:
                     node.contributionsCollection?.contributionCalendar
                         ?.totalContributions || 0,
-                total_stars: totalStars,
+                total_stars: 0,
             };
             tempUsers.push(user);
         }
