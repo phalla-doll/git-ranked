@@ -40,7 +40,7 @@ function getDynamicStats(
         case SO.FOLLOWERS:
             stats.push(
                 {
-                    label: "Top Influence",
+                    label: "Most Followers",
                     value: maxFollowers.toLocaleString(),
                 },
                 {
@@ -88,7 +88,7 @@ function getDynamicStats(
         default:
             stats.push(
                 {
-                    label: "Top Influence",
+                    label: "Most Followers",
                     value: maxFollowers.toLocaleString(),
                 },
                 {
