@@ -2,6 +2,7 @@ import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 interface PageFooterProps {
+    location: string;
     userSearchQuery: string;
     onUserSearchChange: (query: string) => void;
     isSearchingUser: boolean;
@@ -9,6 +10,7 @@ interface PageFooterProps {
 }
 
 export function PageFooter({
+    location,
     userSearchQuery,
     onUserSearchChange,
     isSearchingUser,
@@ -20,11 +22,11 @@ export function PageFooter({
                 <div className="md:max-w-lg">
                     <div className="space-y-2">
                         <p className="text-lg font-semibold text-gray-900">
-                            GitRanked Cambodia
+                            GitRanked {location}
                         </p>
                         <p className="text-sm text-gray-500 leading-relaxed">
                             Discover the most active developers in
-                            Cambodia&apos;s open source community. This
+                            {` ${location}'s`} open source community. This
                             leaderboard highlights local talent to inspire and
                             connect fellow developers.
                         </p>

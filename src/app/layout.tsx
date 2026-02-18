@@ -15,12 +15,14 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://git-ranked-cambodia.vercel.app/"),
-    title: "GitRanked Cambodia - Developer Leaderboard",
+    title: {
+        default: "GitRanked Cambodia - Developer Leaderboard",
+        template: "%s | GitRanked",
+    },
     description: "Find the most cracked devs in your local dev community.",
     openGraph: {
-        title: "GitRanked Cambodia - Developer Leaderboard",
-        description: "Find the most cracked devs in your local dev community.",
-        url: "https://git-ranked-cambodia.vercel.app/",
+        type: "website",
+        siteName: "GitRanked",
         images: [
             {
                 url: "https://git-ranked-cambodia.vercel.app/gitranked-og-main.png",
