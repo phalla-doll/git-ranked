@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { InfoBanner } from "@/components/InfoBanner";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { LocationSearch } from "@/components/LocationSearch";
 import { PageFooter } from "@/components/PageFooter";
@@ -210,7 +209,8 @@ function GitRankedClient() {
                             Cambodia&apos;s GitHub Leaderboard
                         </h1>
                         <p className="text-lg text-gray-500 mb-8 leading-relaxed">
-                            Find top creators in your local dev community.
+                            Find the most cracked devs in your local dev
+                            community.
                         </p>
                         <div className="relative group" ref={inputWrapperRef}>
                             <LocationSearch
@@ -287,8 +287,6 @@ function GitRankedClient() {
                             onPageChange={setPage}
                         />
                     )}
-
-                    <InfoBanner />
                 </div>
             </main>
 
@@ -305,7 +303,12 @@ function GitRankedClient() {
                 onSave={handleSavePromoKey}
             />
 
-            <PageFooter />
+            <PageFooter
+                userSearchQuery={userSearchQuery}
+                onUserSearchChange={setUserSearchQuery}
+                isSearchingUser={isSearchingUser}
+                onUserSearchKeyDown={handleUserSearchKeyDown}
+            />
         </div>
     );
 }

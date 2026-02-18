@@ -92,7 +92,7 @@ export const LeaderboardTable = memo(
                         />
                         <p className="text-apple-text font-medium text-lg">
                             {loadingProgress
-                                ? `Fetching all users... ${loadingProgress.current}/${loadingProgress.total}`
+                                ? `Fetching all users... ${loadingProgress.current?.toLocaleString() || 0}/${loadingProgress.total?.toLocaleString() || 0}`
                                 : "Loading profiles..."}
                         </p>
                         <p className="text-apple-gray text-sm mt-1">
