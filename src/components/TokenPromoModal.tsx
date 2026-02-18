@@ -9,6 +9,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
+import { analytics } from "@/lib/analytics";
 
 interface TokenPromoModalProps {
     isOpen: boolean;
@@ -162,6 +163,11 @@ export const TokenPromoModal = ({
                                         href="https://github.com/settings/tokens"
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        onClick={() =>
+                                            analytics.externalLinkClick(
+                                                "github_tokens",
+                                            )
+                                        }
                                         className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-apple-blue transition-colors font-medium border-b border-transparent hover:border-apple-blue pb-0.5"
                                     >
                                         Don't have one? Generate here{" "}

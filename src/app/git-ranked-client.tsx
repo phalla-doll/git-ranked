@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { LocationSearch } from "@/components/LocationSearch";
 import { PageFooter } from "@/components/PageFooter";
@@ -14,6 +14,7 @@ import { TokenPromoModal } from "@/components/TokenPromoModalWrapper";
 import { UserModal } from "@/components/UserModal";
 import { useApiKey } from "@/hooks/useApiKey";
 import { useUsers } from "@/hooks/useUsers";
+import { analytics } from "@/lib/analytics";
 import { getUserByName } from "@/lib/services/githubService";
 import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
@@ -39,6 +40,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
     const [showPromoModal, setShowPromoModal] = useState(false);
     const [isPending, _startTransition] = useTransition();
+    const modalOpenTimeRef = useRef<number | null>(null);
 
     const { apiKey, setApiKey, saveApiKey } = useApiKey();
     const {
@@ -65,6 +67,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
 
         const timer = setTimeout(() => {
             setShowPromoModal(true);
+            analytics.promoModalOpen();
         }, 2500);
 
         return () => clearTimeout(timer);
@@ -76,7 +79,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
         }
     }, [searchParams, router]);
 
-    const handleSearch = () => {
+    const handleSearch = useCallback(() => {
         const sanitized = inputValue
             .trim()
             .replace(/[^a-zA-Z0-9\s]/g, "")
@@ -87,27 +90,32 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
         setLocation(sanitized);
         setPage(1);
         router.push(`?location=${encodeURIComponent(sanitized)}`);
-    };
+        analytics.locationSearch(sanitized, totalCount);
+    }, [inputValue, router, totalCount]);
 
     const handleUserSearchKeyDown = async (
         e: React.KeyboardEvent<HTMLInputElement>,
     ) => {
         if (e.key === "Enter" && userSearchQuery.trim()) {
+            const searchUsername = userSearchQuery.trim();
             setIsSearchingUser(true);
             try {
-                const user = await getUserByName(
-                    userSearchQuery.trim(),
-                    apiKey,
-                );
+                const user = await getUserByName(searchUsername, apiKey);
                 if (user) {
+                    analytics.userSearch(searchUsername, true);
                     setModalUser(user);
                     setIsModalOpen(true);
+                    modalOpenTimeRef.current = Date.now();
+                    analytics.userModalOpen(searchUsername);
                     setUserSearchQuery("");
                 } else {
+                    analytics.userSearch(searchUsername, false);
+                    analytics.userNotFound(searchUsername);
                     alert("User not found!");
                 }
             } catch (err) {
                 console.error(err);
+                analytics.userSearch(searchUsername, false);
                 alert("Error searching for user.");
             } finally {
                 setIsSearchingUser(false);
@@ -119,10 +127,12 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
         saveApiKey();
         setShowKeyInput(false);
         setPage(1);
+        analytics.apiKeySave(!!apiKey);
     };
 
     const handleClosePromo = (hideForToday: boolean) => {
         setShowPromoModal(false);
+        analytics.promoModalDismiss(hideForToday);
         if (hideForToday) {
             const tomorrow = Date.now() + 24 * 60 * 60 * 1000;
             localStorage.setItem(
@@ -136,6 +146,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
         setApiKey(key);
         localStorage.setItem("gitranked_api_key", key);
         setShowPromoModal(false);
+        analytics.promoModalSave();
     };
 
     const handleRefresh = useCallback(() => {
@@ -144,6 +155,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     }, []);
 
     const handleSortChange = useCallback((sort: SortOption) => {
+        analytics.sortChange(sort);
         setSortBy(sort);
         setPage(1);
     }, []);
@@ -170,7 +182,10 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
             <RateLimitBanner
                 rateLimitHit={rateLimitHit}
                 resetAt={rateLimitResetAt}
-                onAddKey={() => setShowKeyInput(true)}
+                onAddKey={() => {
+                    analytics.rateLimitAddKey();
+                    setShowKeyInput(true);
+                }}
                 onRefresh={handleRefresh}
             />
 
@@ -180,7 +195,10 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                 isSearchingUser={isSearchingUser}
                 onUserSearchKeyDown={handleUserSearchKeyDown}
                 showKeyInput={showKeyInput}
-                onToggleKeyInput={() => setShowKeyInput(!showKeyInput)}
+                onToggleKeyInput={() => {
+                    analytics.apiKeyToggle(showKeyInput ? "close" : "open");
+                    setShowKeyInput(!showKeyInput);
+                }}
                 showToken={showToken}
                 apiKey={apiKey}
                 onToggleShowToken={() => setShowToken(!showToken)}
@@ -235,6 +253,11 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                         page={page}
                         loadingProgress={loadingProgress}
                         onUserClick={async (user) => {
+                            const baseRank = (page - 1) * 100;
+                            const rank = baseRank + users.indexOf(user) + 1;
+                            analytics.userRowClick(user.login, rank);
+                            analytics.userModalOpen(user.login);
+                            modalOpenTimeRef.current = Date.now();
                             setModalUser(user);
                             setIsModalOpen(true);
                             setIsLoadingUserDetail(true);
@@ -265,7 +288,13 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                             page={page}
                             hasNextPage={hasNextPage}
                             loading={loading}
-                            onPageChange={setPage}
+                            onPageChange={(newPage) => {
+                                analytics.paginationClick(
+                                    page,
+                                    newPage > page ? "next" : "prev",
+                                );
+                                setPage(newPage);
+                            }}
                         />
                     )}
                 </div>
@@ -275,7 +304,14 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                 user={modalUser}
                 isOpen={isModalOpen}
                 isLoading={isLoadingUserDetail}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    if (modalUser && modalOpenTimeRef.current) {
+                        const duration = Date.now() - modalOpenTimeRef.current;
+                        analytics.userModalClose(modalUser.login, duration);
+                    }
+                    setIsModalOpen(false);
+                    modalOpenTimeRef.current = null;
+                }}
             />
 
             <TokenPromoModal

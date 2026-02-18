@@ -9,6 +9,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import { memo } from "react";
+import { analytics } from "@/lib/analytics";
 import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
 
@@ -221,9 +222,13 @@ export const LeaderboardTable = memo(
                                                             href={`https://github.com/${user.login}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            onClick={(e) =>
-                                                                e.stopPropagation()
-                                                            }
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                analytics.githubProfileClick(
+                                                                    user.login,
+                                                                    "table",
+                                                                );
+                                                            }}
                                                             className="text-xs text-gray-400 hover:text-gray-600 transition-colors truncate"
                                                         >
                                                             @{user.login}
@@ -303,9 +308,13 @@ export const LeaderboardTable = memo(
                                                 href={`https://github.com/${user.login}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                onClick={(e) =>
-                                                    e.stopPropagation()
-                                                }
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    analytics.githubProfileClick(
+                                                        user.login,
+                                                        "table",
+                                                    );
+                                                }}
                                                 aria-label={`View ${user.login} on GitHub`}
                                                 className="inline-flex p-2.5 text-gray-300 hover:text-apple-blue hover:bg-blue-50 rounded-full transition-colors opacity-0 group-hover:opacity-100 min-h-11 min-w-11 items-center justify-center sm:opacity-100"
                                             >

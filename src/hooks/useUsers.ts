@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { analytics } from "@/lib/analytics";
 import { searchUsersInLocation } from "@/lib/services/githubService";
 import type { GitHubUserDetail, SortOption } from "@/types";
 import { SortOption as SO } from "@/types";
@@ -74,6 +75,7 @@ export function useUsers(
 
                 if (result.error) {
                     setError(result.error);
+                    analytics.apiError(result.error);
                     break;
                 }
 
@@ -83,6 +85,7 @@ export function useUsers(
                     setError(
                         "API rate limit exceeded. Please try again later.",
                     );
+                    analytics.rateLimitHit();
                     break;
                 }
 
@@ -121,9 +124,10 @@ export function useUsers(
             setHasNextPage(sortedUsers.length > USERS_PER_PAGE);
         } catch (err) {
             console.error(err);
-            setError(
-                "An unexpected error occurred while processing your request.",
-            );
+            const errorMessage =
+                "An unexpected error occurred while processing your request.";
+            setError(errorMessage);
+            analytics.apiError(errorMessage);
         } finally {
             setLoading(false);
             setLoadingProgress(null);
@@ -155,6 +159,7 @@ export function useUsers(
 
             if (apiError) {
                 setError(apiError);
+                analytics.apiError(apiError);
             } else {
                 pagesCacheRef.current[pageNum] = fetchedUsers;
                 hasNextPageCacheRef.current[pageNum] = hasNext;
@@ -162,6 +167,9 @@ export function useUsers(
                 setUsers(fetchedUsers);
                 setTotalCount(total_count);
                 setRateLimitHit(rateLimited);
+                if (rateLimited) {
+                    analytics.rateLimitHit();
+                }
                 setRateLimitResetAt(resetAt || null);
                 setHasNextPage(hasNext);
 
@@ -174,9 +182,10 @@ export function useUsers(
             }
         } catch (err) {
             console.error(err);
-            setError(
-                "An unexpected error occurred while processing your request.",
-            );
+            const errorMessage =
+                "An unexpected error occurred while processing your request.";
+            setError(errorMessage);
+            analytics.apiError(errorMessage);
         } finally {
             setLoading(false);
         }

@@ -1,6 +1,7 @@
 import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import { analytics } from "@/lib/analytics";
 
 interface PageFooterProps {
     location: string;
@@ -88,6 +89,7 @@ export function PageFooter({
                         href="https://manthaa.dev/"
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => analytics.externalLinkClick("mantha")}
                         className="font-medium text-gray-900 hover:underline transition-colors"
                     >
                         Mantha

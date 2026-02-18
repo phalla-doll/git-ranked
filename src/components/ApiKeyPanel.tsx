@@ -1,5 +1,6 @@
 import { ArrowUpRight01Icon, EyeIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { analytics } from "@/lib/analytics";
 
 interface ApiKeyPanelProps {
     showToken: boolean;
@@ -27,6 +28,9 @@ export function ApiKeyPanel({
                             href="https://github.com/settings/tokens"
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() =>
+                                analytics.externalLinkClick("github_tokens")
+                            }
                             className="text-apple-blue hover:underline inline-flex items-center gap-1 font-medium"
                         >
                             Generate one here{" "}

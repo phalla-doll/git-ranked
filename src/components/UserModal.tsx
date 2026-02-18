@@ -9,6 +9,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import { analytics } from "@/lib/analytics";
 import type { GitHubUserDetail } from "@/types";
 
 interface UserModalProps {
@@ -74,6 +75,12 @@ export const UserModal = ({
                                     href={user.html_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onClick={() =>
+                                        analytics.githubProfileClick(
+                                            user.login,
+                                            "modal",
+                                        )
+                                    }
                                     className="mb-1 px-5 py-2 bg-black text-white rounded-full text-xs font-medium hover:bg-gray-800 transition-all flex items-center gap-2"
                                 >
                                     <HugeiconsIcon
@@ -207,6 +214,11 @@ export const UserModal = ({
                                             }
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            onClick={() =>
+                                                analytics.userBlogClick(
+                                                    user.login,
+                                                )
+                                            }
                                             className="text-apple-blue hover:underline truncate max-w-62.5"
                                         >
                                             {user.blog}
