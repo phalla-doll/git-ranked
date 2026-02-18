@@ -1,10 +1,10 @@
 import {
-    OfficeIcon,
     Calendar01Icon,
     Cancel01Icon,
     Github01Icon,
     Link01Icon,
     Location01Icon,
+    OfficeIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";

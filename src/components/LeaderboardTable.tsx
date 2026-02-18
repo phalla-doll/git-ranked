@@ -1,8 +1,8 @@
 import {
-    Activity01Icon,
     AlertDiamondIcon,
     ArrowUpRight01Icon,
     Award01Icon,
+    Loading03Icon,
     Medal01Icon,
     Search01Icon,
 } from "@hugeicons/core-free-icons";
@@ -81,15 +81,13 @@ export const LeaderboardTable = memo(
         if (loading && users.length === 0) {
             return (
                 <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-[400px]">
-                    <div className="flex flex-col items-center animate-pulse">
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                            <HugeiconsIcon
-                                icon={Activity01Icon}
-                                size={20}
-                                color="currentColor"
-                                className="text-gray-400"
-                            />
-                        </div>
+                    <div className="flex flex-col items-center">
+                        <HugeiconsIcon
+                            icon={Loading03Icon}
+                            size={32}
+                            color="currentColor"
+                            className="text-gray-400 animate-spin mb-4"
+                        />
                         <p className="text-apple-text font-medium text-lg">
                             Loading profiles...
                         </p>
@@ -306,7 +304,12 @@ export const LeaderboardTable = memo(
 
                 {loading && (
                     <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-10">
-                        <div className="w-8 h-8 border-2 border-gray-200 border-t-apple-blue rounded-full animate-spin"></div>
+                        <HugeiconsIcon
+                            icon={Loading03Icon}
+                            size={32}
+                            color="currentColor"
+                            className="text-apple-blue animate-spin"
+                        />
                     </div>
                 )}
             </div>

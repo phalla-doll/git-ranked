@@ -1,7 +1,7 @@
 import {
     CommandLineIcon,
     KeyIcon,
-    Loading01Icon,
+    Loading03Icon,
     Search01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -78,8 +78,8 @@ export function PageNavigation({
                             />
                             {isSearchingUser && (
                                 <HugeiconsIcon
-                                    icon={Loading01Icon}
-                                    size={14}
+                                    icon={Loading03Icon}
+                                    size={20}
                                     color="#2563EB"
                                     className="animate-spin"
                                     strokeWidth={1.5}
