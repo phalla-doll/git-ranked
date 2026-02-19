@@ -42,7 +42,7 @@ async function searchUsersGraphQL(
             sortQuery = "repositories-desc";
             break;
         case SortOption.CONTRIBUTIONS:
-            sortQuery = "followers-desc";
+            sortQuery = "repositories-desc";
             break;
         default:
             sortQuery = "joined-desc";
@@ -246,7 +246,7 @@ export async function POST(request: Request) {
     const result = await searchUsersGraphQL(
         query,
         sort,
-        60,
+        100,
         cursor || null,
         token,
     );

@@ -6,7 +6,6 @@ import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { LocationSearch } from "@/components/LocationSearch";
 import { PageFooter } from "@/components/PageFooter";
 import { PageNavigation } from "@/components/PageNavigation";
-import { PaginationControls } from "@/components/PaginationControls";
 import { RateLimitBanner } from "@/components/RateLimitBanner";
 import { SortOptions } from "@/components/SortOptions";
 import { StatsGrid } from "@/components/StatsGrid";
@@ -29,7 +28,6 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const [location, setLocation] = useState(initialLocation);
     const [inputValue, setInputValue] = useState(initialLocation);
     const [sortBy, setSortBy] = useState<SortOption>(SortOption.FOLLOWERS);
-    const [page, setPage] = useState(1);
     const [refreshKey, setRefreshKey] = useState(0);
     const [showKeyInput, setShowKeyInput] = useState(false);
     const [showToken, setShowToken] = useState(false);
@@ -50,9 +48,8 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
         totalCount,
         rateLimitHit,
         rateLimitResetAt,
-        hasNextPage,
         loadingProgress,
-    } = useUsers(location, sortBy, page, apiKey, refreshKey);
+    } = useUsers(location, sortBy, apiKey, refreshKey);
 
     useEffect(() => {
         if (apiKey) return;
@@ -88,7 +85,6 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
             return;
         }
         setLocation(sanitized);
-        setPage(1);
         router.push(`?location=${encodeURIComponent(sanitized)}`);
         analytics.locationSearch(sanitized, totalCount);
     }, [inputValue, router, totalCount]);
@@ -126,7 +122,6 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const handleSaveApiKey = () => {
         saveApiKey();
         setShowKeyInput(false);
-        setPage(1);
         analytics.apiKeySave(!!apiKey);
     };
 
@@ -151,13 +146,11 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
 
     const handleRefresh = useCallback(() => {
         setRefreshKey((prev) => prev + 1);
-        setPage(1);
     }, []);
 
     const handleSortChange = useCallback((sort: SortOption) => {
         analytics.sortChange(sort);
         setSortBy(sort);
-        setPage(1);
     }, []);
 
     const getListTitle = () => {
@@ -250,11 +243,9 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                         sortBy={sortBy}
                         loading={isPending || loading}
                         error={error}
-                        page={page}
                         loadingProgress={loadingProgress}
                         onUserClick={async (user) => {
-                            const baseRank = (page - 1) * 100;
-                            const rank = baseRank + users.indexOf(user) + 1;
+                            const rank = users.indexOf(user) + 1;
                             analytics.userRowClick(user.login, rank);
                             analytics.userModalOpen(user.login);
                             modalOpenTimeRef.current = Date.now();
@@ -282,21 +273,6 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                             }
                         }}
                     />
-
-                    {users.length > 0 && (
-                        <PaginationControls
-                            page={page}
-                            hasNextPage={hasNextPage}
-                            loading={loading}
-                            onPageChange={(newPage) => {
-                                analytics.paginationClick(
-                                    page,
-                                    newPage > page ? "next" : "prev",
-                                );
-                                setPage(newPage);
-                            }}
-                        />
-                    )}
                 </div>
             </main>
 

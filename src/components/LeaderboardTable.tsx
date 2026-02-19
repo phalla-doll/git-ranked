@@ -18,7 +18,6 @@ interface LeaderboardTableProps {
     sortBy: SortOption;
     loading: boolean;
     error?: string | null;
-    page: number;
     loadingProgress?: { current: number; total: number } | null;
     onUserClick: (user: GitHubUserDetail) => void;
 }
@@ -77,7 +76,6 @@ export const LeaderboardTable = memo(
         sortBy,
         loading,
         error,
-        page,
         loadingProgress,
         onUserClick,
     }: LeaderboardTableProps) => {
@@ -149,8 +147,6 @@ export const LeaderboardTable = memo(
             );
         }
 
-        const baseRank = (page - 1) * 100;
-
         return (
             <div className="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden relative min-h-125">
                 <div className="overflow-x-auto">
@@ -177,7 +173,6 @@ export const LeaderboardTable = memo(
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {users.map((user, index) => {
-                                const currentRank = baseRank + index + 1;
                                 return (
                                     <tr
                                         key={
@@ -189,7 +184,7 @@ export const LeaderboardTable = memo(
                                         className="group hover:bg-blue-50/30 transition-colors duration-200 cursor-pointer"
                                     >
                                         <td className="px-6 py-4 text-center">
-                                            <RankBadge rank={currentRank} />
+                                            <RankBadge rank={index + 1} />
                                         </td>
 
                                         <td className="px-6 py-4">

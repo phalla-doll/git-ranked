@@ -4,8 +4,8 @@ import { searchUsersInLocation } from "@/lib/services/githubService";
 import type { GitHubUserDetail, SortOption } from "@/types";
 import { SortOption as SO } from "@/types";
 
-const USERS_PER_PAGE = 50;
-const MAX_CONTRIBUTION_USERS = 1000;
+const MAX_USERS = 100;
+const MAX_CONTRIBUTION_USERS = 2000;
 
 interface ContributionCache {
     location: string;
@@ -16,7 +16,6 @@ interface ContributionCache {
 export function useUsers(
     location: string,
     sortBy: SortOption,
-    page: number,
     apiKey: string,
     refreshTrigger: number = 0,
 ) {
@@ -28,22 +27,16 @@ export function useUsers(
     const [rateLimitResetAt, setRateLimitResetAt] = useState<number | null>(
         null,
     );
-    const [hasNextPage, setHasNextPage] = useState(false);
     const [loadingProgress, setLoadingProgress] = useState<{
         current: number;
         total: number;
     } | null>(null);
 
-    const cursorsRef = useRef<Record<number, string>>({});
-    const pagesCacheRef = useRef<Record<number, GitHubUserDetail[]>>({});
-    const hasNextPageCacheRef = useRef<Record<number, boolean>>({});
     const contributionCacheRef = useRef<ContributionCache | null>(null);
-    const pageRef = useRef(page);
     const locationRef = useRef(location);
     const sortByRef = useRef(sortBy);
     const apiKeyRef = useRef(apiKey);
 
-    pageRef.current = page;
     locationRef.current = location;
     sortByRef.current = sortBy;
     apiKeyRef.current = apiKey;
@@ -67,7 +60,7 @@ export function useUsers(
             while (totalFetched < MAX_CONTRIBUTION_USERS) {
                 const result = await searchUsersInLocation(
                     locationRef.current,
-                    SO.FOLLOWERS,
+                    SO.REPOS,
                     1,
                     apiKeyRef.current,
                     cursor || undefined,
@@ -119,9 +112,8 @@ export function useUsers(
                 totalCount: sortedUsers.length,
             };
 
-            setUsers(sortedUsers.slice(0, USERS_PER_PAGE));
+            setUsers(sortedUsers.slice(0, MAX_USERS));
             setTotalCount(sortedUsers.length);
-            setHasNextPage(sortedUsers.length > USERS_PER_PAGE);
         } catch (err) {
             console.error(err);
             const errorMessage =
@@ -134,7 +126,7 @@ export function useUsers(
         }
     }, []);
 
-    const fetchPaginatedUsers = useCallback(async (pageNum: number) => {
+    const fetchUsers = useCallback(async () => {
         setLoading(true);
         setError(null);
         setRateLimitHit(false);
@@ -147,38 +139,24 @@ export function useUsers(
                 rateLimited,
                 resetAt,
                 error: apiError,
-                hasNextPage: hasNext,
-                endCursor,
             } = await searchUsersInLocation(
                 locationRef.current,
                 sortByRef.current,
-                pageNum,
+                1,
                 apiKeyRef.current,
-                cursorsRef.current[pageNum - 1],
             );
 
             if (apiError) {
                 setError(apiError);
                 analytics.apiError(apiError);
             } else {
-                pagesCacheRef.current[pageNum] = fetchedUsers;
-                hasNextPageCacheRef.current[pageNum] = hasNext;
-
-                setUsers(fetchedUsers);
+                setUsers(fetchedUsers.slice(0, MAX_USERS));
                 setTotalCount(total_count);
                 setRateLimitHit(rateLimited);
                 if (rateLimited) {
                     analytics.rateLimitHit();
                 }
                 setRateLimitResetAt(resetAt || null);
-                setHasNextPage(hasNext);
-
-                if (endCursor && hasNext) {
-                    cursorsRef.current = {
-                        ...cursorsRef.current,
-                        [pageNum]: endCursor,
-                    };
-                }
             }
         } catch (err) {
             console.error(err);
@@ -191,20 +169,16 @@ export function useUsers(
         }
     }, []);
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: sortBy and refreshTrigger intentionally trigger re-fetch when they change
+    // biome-ignore lint/correctness/useExhaustiveDependencies: refreshTrigger intentionally triggers re-fetch
     useEffect(() => {
         setUsers([]);
         setTotalCount(0);
 
-        cursorsRef.current = {};
-        pagesCacheRef.current = {};
-        hasNextPageCacheRef.current = {};
         const cached = contributionCacheRef.current;
 
         if (cached && cached.location === location) {
-            setUsers(cached.users.slice(0, USERS_PER_PAGE));
+            setUsers(cached.users.slice(0, MAX_USERS));
             setTotalCount(cached.totalCount);
-            setHasNextPage(cached.users.length > USERS_PER_PAGE);
             return;
         }
 
@@ -213,36 +187,15 @@ export function useUsers(
         if (isContributionSort) {
             fetchAllUsersForContributions();
         } else {
-            fetchPaginatedUsers(1);
+            fetchUsers();
         }
     }, [
         location,
-        sortBy,
         isContributionSort,
         fetchAllUsersForContributions,
-        fetchPaginatedUsers,
+        fetchUsers,
         refreshTrigger,
     ]);
-
-    useEffect(() => {
-        if (isContributionSort) {
-            const cached = contributionCacheRef.current;
-            if (cached) {
-                const startIndex = (page - 1) * USERS_PER_PAGE;
-                const endIndex = startIndex + USERS_PER_PAGE;
-                setUsers(cached.users.slice(startIndex, endIndex));
-                setHasNextPage(endIndex < cached.users.length);
-            }
-        } else {
-            const cachedPage = pagesCacheRef.current[page];
-            if (cachedPage) {
-                setUsers(cachedPage);
-                setHasNextPage(hasNextPageCacheRef.current[page] ?? false);
-            } else {
-                fetchPaginatedUsers(page);
-            }
-        }
-    }, [page, isContributionSort, fetchPaginatedUsers]);
 
     return {
         users,
@@ -251,7 +204,6 @@ export function useUsers(
         totalCount,
         rateLimitHit,
         rateLimitResetAt,
-        hasNextPage,
         loadingProgress,
     };
 }
