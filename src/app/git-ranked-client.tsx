@@ -34,6 +34,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const [userSearchQuery, setUserSearchQuery] = useState("");
     const [isSearchingUser, setIsSearchingUser] = useState(false);
     const [modalUser, setModalUser] = useState<GitHubUserDetail | null>(null);
+    const [modalRank, setModalRank] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
     const [showPromoModal, setShowPromoModal] = useState(false);
@@ -250,6 +251,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                             analytics.userModalOpen(user.login);
                             modalOpenTimeRef.current = Date.now();
                             setModalUser(user);
+                            setModalRank(rank);
                             setIsModalOpen(true);
                             setIsLoadingUserDetail(true);
                             try {
@@ -278,6 +280,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
 
             <UserModal
                 user={modalUser}
+                rank={modalRank ?? undefined}
                 isOpen={isModalOpen}
                 isLoading={isLoadingUserDetail}
                 onClose={() => {
@@ -286,6 +289,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                         analytics.userModalClose(modalUser.login, duration);
                     }
                     setIsModalOpen(false);
+                    setModalRank(null);
                     modalOpenTimeRef.current = null;
                 }}
             />
