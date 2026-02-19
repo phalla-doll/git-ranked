@@ -46,10 +46,6 @@ export const metadata: Metadata = {
     alternates: {
         canonical: "https://git-ranked-cambodia.vercel.app/",
     },
-    themeColor: [
-        { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-        { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
-    ],
     openGraph: {
         type: "website",
         siteName: "GitRanked",
