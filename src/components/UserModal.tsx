@@ -31,7 +31,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
         icon = (
             <HugeiconsIcon
                 icon={Award01Icon}
-                size={20}
+                size={28}
                 color="#EAB308"
                 strokeWidth={1.5}
                 className="fill-yellow-500/20"
@@ -42,7 +42,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
         icon = (
             <HugeiconsIcon
                 icon={Medal01Icon}
-                size={20}
+                size={28}
                 color="#9CA3AF"
                 strokeWidth={1.5}
                 className="fill-gray-400/20"
@@ -53,7 +53,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
         icon = (
             <HugeiconsIcon
                 icon={Medal01Icon}
-                size={20}
+                size={28}
                 color="#F97316"
                 strokeWidth={1.5}
                 className="fill-orange-500/20"
@@ -63,7 +63,7 @@ const RankBadge = ({ rank }: { rank: number }) => {
 
     return (
         <div className={`flex items-center gap-1.5 ${colorClass}`}>
-            {icon ? icon : <span className="text-sm">#{rank}</span>}
+            {icon ? icon : <span className="text-2xl">#{rank}</span>}
         </div>
     );
 };
@@ -144,7 +144,7 @@ export const UserModal = ({
                             </div>
 
                             <div className="mb-4">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
                                     <h2 className="text-2xl font-medium text-apple-text tracking-tight">
                                         {user.name || user.login}
                                     </h2>
