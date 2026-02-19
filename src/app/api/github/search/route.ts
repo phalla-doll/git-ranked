@@ -5,6 +5,20 @@ import { SortOption } from "@/types";
 
 const GRAPHQL_URL = "https://api.github.com/graphql";
 
+const SERVER_TOKEN_CONFIG = {
+    repos: [100, 50],
+    followers: [100, 50],
+    joined: [100],
+};
+
+const USER_TOKEN_CONFIG = {
+    repos: [100, 100, 50],
+    followers: [100, 100, 50],
+    joined: [100],
+};
+
+type FetchConfig = typeof SERVER_TOKEN_CONFIG;
+
 interface SearchRequest {
     query: string;
     sort: string;
@@ -189,6 +203,65 @@ async function searchUsersGraphQL(
     }
 }
 
+function mergeAndDedupeUsers(
+    ...userArrays: GitHubUserDetail[][]
+): GitHubUserDetail[] {
+    const userMap = new Map<number, GitHubUserDetail>();
+    for (const users of userArrays) {
+        for (const user of users) {
+            if (!userMap.has(user.id)) {
+                userMap.set(user.id, user);
+            }
+        }
+    }
+    return Array.from(userMap.values());
+}
+
+async function fetchWithPagination(
+    query: string,
+    sort: SortOption,
+    limits: number[],
+    token: string,
+): Promise<{
+    users: GitHubUserDetail[];
+    rateLimited: boolean;
+    error?: string;
+}> {
+    const allUsers: GitHubUserDetail[] = [];
+    let cursor: string | null = null;
+    let rateLimited = false;
+    let error: string | undefined;
+
+    for (const limit of limits) {
+        const result = await searchUsersGraphQL(
+            query,
+            sort,
+            limit,
+            cursor,
+            token,
+        );
+
+        if (result.rateLimited) {
+            rateLimited = true;
+            break;
+        }
+
+        if (result.error) {
+            error = result.error;
+            break;
+        }
+
+        allUsers.push(...result.users);
+        cursor = result.endCursor;
+
+        if (!result.hasNextPage) {
+            break;
+        }
+    }
+
+    return { users: allUsers, rateLimited, error };
+}
+
 export async function POST(request: Request) {
     const body: SearchRequest = await request.json();
     const { query, sort, cursor, userToken } = body;
@@ -242,6 +315,73 @@ export async function POST(request: Request) {
             "X-RateLimit-Remaining": String(rateCheck.remaining),
             "X-RateLimit-Reset": String(rateCheck.resetAt),
         };
+    }
+
+    if (sort === SortOption.CONTRIBUTIONS && !cursor) {
+        const config: FetchConfig = userToken
+            ? USER_TOKEN_CONFIG
+            : SERVER_TOKEN_CONFIG;
+
+        const [reposResult, followersResult, joinedResult] = await Promise.all([
+            fetchWithPagination(query, SortOption.REPOS, config.repos, token),
+            fetchWithPagination(
+                query,
+                SortOption.FOLLOWERS,
+                config.followers,
+                token,
+            ),
+            fetchWithPagination(query, SortOption.JOINED, config.joined, token),
+        ]);
+
+        if (
+            reposResult.rateLimited ||
+            followersResult.rateLimited ||
+            joinedResult.rateLimited
+        ) {
+            return NextResponse.json(
+                {
+                    users: [],
+                    total_count: 0,
+                    hasNextPage: false,
+                    endCursor: null,
+                    rateLimited: true,
+                    error: "API rate limit exceeded.",
+                },
+                { headers: rateLimitHeaders },
+            );
+        }
+
+        if (reposResult.error && followersResult.error && joinedResult.error) {
+            return NextResponse.json(
+                {
+                    users: [],
+                    total_count: 0,
+                    hasNextPage: false,
+                    endCursor: null,
+                    rateLimited: false,
+                    error: reposResult.error,
+                },
+                { headers: rateLimitHeaders },
+            );
+        }
+
+        const mergedUsers = mergeAndDedupeUsers(
+            reposResult.users,
+            followersResult.users,
+            joinedResult.users,
+        );
+
+        return NextResponse.json(
+            {
+                users: mergedUsers,
+                total_count: mergedUsers.length,
+                hasNextPage: false,
+                endCursor: null,
+                rateLimited: false,
+                error: undefined,
+            },
+            { headers: rateLimitHeaders },
+        );
     }
 
     const result = await searchUsersGraphQL(
