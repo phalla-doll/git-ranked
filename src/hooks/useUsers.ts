@@ -4,14 +4,42 @@ import { searchUsersInLocation } from "@/lib/services/githubService";
 import type { GitHubUserDetail, SortOption } from "@/types";
 import { SortOption as SO } from "@/types";
 
-const MAX_USERS = 100;
-const MAX_CONTRIBUTION_USERS = 2000;
+const MAX_FETCH = 100;
+const MAX_DISPLAY = 100;
 
-interface ContributionCache {
+interface UsersCache {
     location: string;
+    sortBy: SortOption;
+    hasApiKey: boolean;
     users: GitHubUserDetail[];
     totalCount: number;
 }
+
+const sortUsers = (
+    users: GitHubUserDetail[],
+    sortBy: SortOption,
+): GitHubUserDetail[] => {
+    return [...users].sort((a, b) => {
+        switch (sortBy) {
+            case SO.FOLLOWERS:
+                return (b.followers || 0) - (a.followers || 0);
+            case SO.REPOS:
+                return (b.public_repos || 0) - (a.public_repos || 0);
+            case SO.JOINED:
+                return (
+                    new Date(a.created_at || 0).getTime() -
+                    new Date(b.created_at || 0).getTime()
+                );
+            case SO.CONTRIBUTIONS:
+                return (
+                    (b.recent_activity_count || 0) -
+                    (a.recent_activity_count || 0)
+                );
+            default:
+                return 0;
+        }
+    });
+};
 
 export function useUsers(
     location: string,
@@ -32,7 +60,7 @@ export function useUsers(
         total: number;
     } | null>(null);
 
-    const contributionCacheRef = useRef<ContributionCache | null>(null);
+    const cacheRef = useRef<UsersCache | null>(null);
     const locationRef = useRef(location);
     const sortByRef = useRef(sortBy);
     const apiKeyRef = useRef(apiKey);
@@ -41,26 +69,23 @@ export function useUsers(
     sortByRef.current = sortBy;
     apiKeyRef.current = apiKey;
 
-    const isContributionSort = sortBy === SO.CONTRIBUTIONS;
-
-    const fetchAllUsersForContributions = useCallback(async () => {
+    const fetchAllUsersPaginated = useCallback(async () => {
         setLoading(true);
         setUsers([]);
         setError(null);
         setRateLimitHit(false);
         setRateLimitResetAt(null);
-        setLoadingProgress({ current: 0, total: 0 });
+        setLoadingProgress({ current: 0, total: MAX_FETCH });
 
         const allUsers: GitHubUserDetail[] = [];
         let cursor: string | null = null;
         let totalFetched = 0;
-        let estimatedTotal = MAX_CONTRIBUTION_USERS;
 
         try {
-            while (totalFetched < MAX_CONTRIBUTION_USERS) {
+            while (totalFetched < MAX_FETCH) {
                 const result = await searchUsersInLocation(
                     locationRef.current,
-                    SO.REPOS,
+                    sortByRef.current,
                     1,
                     apiKeyRef.current,
                     cursor || undefined,
@@ -85,34 +110,28 @@ export function useUsers(
                 allUsers.push(...result.users);
                 totalFetched += result.users.length;
 
-                if (totalFetched === 0 || !result.hasNextPage) {
+                if (result.users.length === 0 || !result.hasNextPage) {
                     break;
                 }
 
                 cursor = result.endCursor;
-                estimatedTotal = Math.min(
-                    result.total_count,
-                    MAX_CONTRIBUTION_USERS,
-                );
                 setLoadingProgress({
                     current: totalFetched,
-                    total: estimatedTotal,
+                    total: Math.min(result.total_count, MAX_FETCH),
                 });
             }
 
-            const sortedUsers = allUsers.sort(
-                (a, b) =>
-                    (b.recent_activity_count || 0) -
-                    (a.recent_activity_count || 0),
-            );
+            const sortedUsers = sortUsers(allUsers, sortByRef.current);
 
-            contributionCacheRef.current = {
+            cacheRef.current = {
                 location: locationRef.current,
+                sortBy: sortByRef.current,
+                hasApiKey: !!apiKeyRef.current,
                 users: sortedUsers,
                 totalCount: sortedUsers.length,
             };
 
-            setUsers(sortedUsers.slice(0, MAX_USERS));
+            setUsers(sortedUsers.slice(0, MAX_DISPLAY));
             setTotalCount(sortedUsers.length);
         } catch (err) {
             console.error(err);
@@ -126,76 +145,27 @@ export function useUsers(
         }
     }, []);
 
-    const fetchUsers = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        setRateLimitHit(false);
-        setRateLimitResetAt(null);
-
-        try {
-            const {
-                users: fetchedUsers,
-                total_count,
-                rateLimited,
-                resetAt,
-                error: apiError,
-            } = await searchUsersInLocation(
-                locationRef.current,
-                sortByRef.current,
-                1,
-                apiKeyRef.current,
-            );
-
-            if (apiError) {
-                setError(apiError);
-                analytics.apiError(apiError);
-            } else {
-                setUsers(fetchedUsers.slice(0, MAX_USERS));
-                setTotalCount(total_count);
-                setRateLimitHit(rateLimited);
-                if (rateLimited) {
-                    analytics.rateLimitHit();
-                }
-                setRateLimitResetAt(resetAt || null);
-            }
-        } catch (err) {
-            console.error(err);
-            const errorMessage =
-                "An unexpected error occurred while processing your request.";
-            setError(errorMessage);
-            analytics.apiError(errorMessage);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
     // biome-ignore lint/correctness/useExhaustiveDependencies: refreshTrigger intentionally triggers re-fetch
     useEffect(() => {
         setUsers([]);
         setTotalCount(0);
 
-        const cached = contributionCacheRef.current;
+        const cached = cacheRef.current;
 
-        if (cached && cached.location === location) {
-            setUsers(cached.users.slice(0, MAX_USERS));
+        if (
+            cached &&
+            cached.location === location &&
+            cached.sortBy === sortBy &&
+            cached.hasApiKey === !!apiKey
+        ) {
+            setUsers(cached.users.slice(0, MAX_DISPLAY));
             setTotalCount(cached.totalCount);
             return;
         }
 
-        contributionCacheRef.current = null;
-
-        if (isContributionSort) {
-            fetchAllUsersForContributions();
-        } else {
-            fetchUsers();
-        }
-    }, [
-        location,
-        isContributionSort,
-        fetchAllUsersForContributions,
-        fetchUsers,
-        refreshTrigger,
-    ]);
+        cacheRef.current = null;
+        fetchAllUsersPaginated();
+    }, [location, sortBy, fetchAllUsersPaginated, refreshTrigger, apiKey]);
 
     return {
         users,

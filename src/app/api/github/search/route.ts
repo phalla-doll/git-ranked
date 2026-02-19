@@ -24,7 +24,7 @@ interface GraphQLSearchResult {
 async function searchUsersGraphQL(
     query: string,
     sort: string,
-    first: number = 50,
+    first: number = 25,
     after: string | null = null,
     token: string,
 ): Promise<GraphQLSearchResult> {
@@ -141,8 +141,9 @@ async function searchUsersGraphQL(
         const users: GitHubUserDetail[] = [];
         for (const edge of edges) {
             const node = edge.node;
-            if (!node || !node.databaseId || !node.login || !node.avatarUrl)
+            if (!node || !node.databaseId || !node.login || !node.avatarUrl) {
                 continue;
+            }
 
             const user: GitHubUserDetail = {
                 login: node.login,
@@ -246,7 +247,7 @@ export async function POST(request: Request) {
     const result = await searchUsersGraphQL(
         query,
         sort,
-        100,
+        25,
         cursor || null,
         token,
     );
