@@ -1,10 +1,12 @@
 import {
+    Award01Icon,
     Calendar01Icon,
     Cancel01Icon,
     Github01Icon,
     Link01Icon,
     Loading03Icon,
     Location01Icon,
+    Medal01Icon,
     OfficeIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -14,13 +16,61 @@ import type { GitHubUserDetail } from "@/types";
 
 interface UserModalProps {
     user: GitHubUserDetail | null;
+    rank?: number;
     isOpen: boolean;
     isLoading?: boolean;
     onClose: () => void;
 }
 
+const RankBadge = ({ rank }: { rank: number }) => {
+    let colorClass = "text-gray-500 font-medium";
+    let icon = null;
+
+    if (rank === 1) {
+        colorClass = "text-yellow-600 font-medium";
+        icon = (
+            <HugeiconsIcon
+                icon={Award01Icon}
+                size={20}
+                color="#EAB308"
+                strokeWidth={1.5}
+                className="fill-yellow-500/20"
+            />
+        );
+    } else if (rank === 2) {
+        colorClass = "text-gray-600 font-medium";
+        icon = (
+            <HugeiconsIcon
+                icon={Medal01Icon}
+                size={20}
+                color="#9CA3AF"
+                strokeWidth={1.5}
+                className="fill-gray-400/20"
+            />
+        );
+    } else if (rank === 3) {
+        colorClass = "text-orange-700 font-medium";
+        icon = (
+            <HugeiconsIcon
+                icon={Medal01Icon}
+                size={20}
+                color="#F97316"
+                strokeWidth={1.5}
+                className="fill-orange-500/20"
+            />
+        );
+    }
+
+    return (
+        <div className={`flex items-center gap-1.5 ${colorClass}`}>
+            {icon ? icon : <span className="text-sm">#{rank}</span>}
+        </div>
+    );
+};
+
 export const UserModal = ({
     user,
+    rank,
     isOpen,
     isLoading,
     onClose,
@@ -94,9 +144,12 @@ export const UserModal = ({
                             </div>
 
                             <div className="mb-4">
-                                <h2 className="text-2xl font-medium text-apple-text tracking-tight">
-                                    {user.name || user.login}
-                                </h2>
+                                <div className="flex items-center gap-2">
+                                    <h2 className="text-2xl font-medium text-apple-text tracking-tight">
+                                        {user.name || user.login}
+                                    </h2>
+                                    {rank && <RankBadge rank={rank} />}
+                                </div>
                                 <p className="text-apple-gray text-sm">
                                     @{user.login}
                                 </p>
