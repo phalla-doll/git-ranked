@@ -3,7 +3,6 @@ import type { MetadataRoute } from "next";
 const POPULAR_LOCATIONS = [
     "Cambodia",
     "Singapore",
-    "Thailand",
     "Vietnam",
     "Indonesia",
     "Malaysia",
@@ -21,6 +20,23 @@ const POPULAR_LOCATIONS = [
     "Netherlands",
     "South Korea",
     "Taiwan",
+    "Mexico",
+    "Spain",
+    "Italy",
+    "Poland",
+    "Sweden",
+    "Switzerland",
+    "Belgium",
+    "Austria",
+    "Ireland",
+    "Norway",
+    "Denmark",
+    "Finland",
+    "New Zealand",
+    "South Africa",
+    "Argentina",
+    "Chile",
+    "Colombia",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
