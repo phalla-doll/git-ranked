@@ -32,6 +32,7 @@ export function LocationSearch({
                 </div>
                 <input
                     type="text"
+                    disabled
                     className="block w-full pl-12 pr-4 py-4 bg-white rounded-2xl border-0 text-apple-text placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-apple-blue/50 transition-all font-medium text-lg ring-1 ring-gray-200"
                     placeholder="Search by country (e.g. Cambodia)…"
                     value={location}
@@ -41,6 +42,7 @@ export function LocationSearch({
                 />
                 <div className="absolute inset-y-2 right-2">
                     <button
+                        disabled
                         type="submit"
                         className="h-full px-6 bg-apple-blue hover:bg-apple-blueHover text-white rounded-xl text-sm font-medium transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
                     >
