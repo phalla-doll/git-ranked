@@ -182,10 +182,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                                     user.login,
                                 );
                                 if (fullUser) {
-                                    setModalUser({
-                                        ...user,
-                                        total_stars: fullUser.total_stars,
-                                    });
+                                    setModalUser(fullUser);
                                 }
                             } catch (err) {
                                 console.error(
