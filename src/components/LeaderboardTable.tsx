@@ -358,7 +358,7 @@ export const LeaderboardTable = memo(
                 {hasMore && (
                     <div
                         ref={sentinelRef}
-                        className="h-10 flex items-center justify-center"
+                        className="h-10 py-6 flex items-center justify-center"
                     >
                         {loadingMore && (
                             <div className="flex items-center gap-2 text-sm text-gray-500">
