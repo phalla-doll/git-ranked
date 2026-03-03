@@ -11,7 +11,6 @@ import { StatsGrid } from "@/components/StatsGrid";
 import { UserModal } from "@/components/UserModal";
 import { useUsers } from "@/hooks/useUsers";
 import { analytics } from "@/lib/analytics";
-import { getUserByName } from "@/lib/services/githubService";
 import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
 
@@ -71,7 +70,17 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
             const searchUsername = userSearchQuery.trim();
             setIsSearchingUser(true);
             try {
-                const user = await getUserByName(searchUsername);
+                const response = await fetch(
+                    `/api/github/users/${searchUsername}`,
+                );
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Failed to fetch user");
+                }
+
+                const user = await response.json();
+
                 if (user) {
                     analytics.userSearch(searchUsername, true);
                     setModalUser(user);
@@ -178,9 +187,18 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                             setIsModalOpen(true);
                             setIsLoadingUserDetail(true);
                             try {
-                                const fullUser = await getUserByName(
-                                    user.login,
+                                const response = await fetch(
+                                    `/api/github/users/${user.login}`,
                                 );
+
+                                if (!response.ok) {
+                                    console.error(
+                                        "Failed to fetch user details",
+                                    );
+                                    return;
+                                }
+
+                                const fullUser = await response.json();
                                 if (fullUser) {
                                     setModalUser(fullUser);
                                 }
