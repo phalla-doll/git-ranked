@@ -15,6 +15,15 @@ export async function GET(
         const { login } = await context.params;
         const apiKey = process.env.GITHUB_TOKEN;
 
+        console.log("[API Route] User requested:", login);
+        console.log("[API Route] GITHUB_TOKEN present:", !!apiKey);
+        if (apiKey) {
+            console.log(
+                "[API Route] Token (masked):",
+                `${apiKey.substring(0, 7)}...${apiKey.substring(apiKey.length - 4)}`,
+            );
+        }
+
         if (!apiKey) {
             return NextResponse.json(
                 { error: "GITHUB_TOKEN is not configured on the server" },
