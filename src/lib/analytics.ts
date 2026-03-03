@@ -33,18 +33,6 @@ export const analytics = {
         trackEvent("pagination_click", { page, direction });
     },
 
-    apiKeyToggle: (action: "open" | "close") => {
-        trackEvent("api_key_toggle", { action });
-    },
-
-    apiKeySave: (hasKey: boolean) => {
-        trackEvent("api_key_save", { has_key: hasKey });
-    },
-
-    rateLimitAddKey: () => {
-        trackEvent("rate_limit_add_key");
-    },
-
     userRowClick: (username: string, rank: number) => {
         trackEvent("user_row_click", { username, rank });
     },
@@ -72,23 +60,7 @@ export const analytics = {
         });
     },
 
-    promoModalOpen: () => {
-        trackEvent("promo_modal_open");
-    },
-
-    promoModalDismiss: (hideForToday: boolean) => {
-        trackEvent("promo_modal_dismiss", { hide_for_today: hideForToday });
-    },
-
-    promoModalSave: () => {
-        trackEvent("promo_modal_save");
-    },
-
     apiError: (errorMessage: string) => {
         trackEvent("api_error", { error_message: errorMessage });
-    },
-
-    rateLimitHit: () => {
-        trackEvent("rate_limit_hit");
     },
 };

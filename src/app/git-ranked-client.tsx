@@ -6,12 +6,9 @@ import { LeaderboardTable } from "@/components/LeaderboardTable";
 import { LocationSearch } from "@/components/LocationSearch";
 import { PageFooter } from "@/components/PageFooter";
 import { PageNavigation } from "@/components/PageNavigation";
-import { RateLimitBanner } from "@/components/RateLimitBanner";
 import { SortOptions } from "@/components/SortOptions";
 import { StatsGrid } from "@/components/StatsGrid";
-import { TokenPromoModal } from "@/components/TokenPromoModalWrapper";
 import { UserModal } from "@/components/UserModal";
-import { useApiKey } from "@/hooks/useApiKey";
 import { useUsers } from "@/hooks/useUsers";
 import { analytics } from "@/lib/analytics";
 import { getUserByName } from "@/lib/services/githubService";
@@ -28,48 +25,25 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const [location, setLocation] = useState(initialLocation);
     const [inputValue, setInputValue] = useState(initialLocation);
     const [sortBy, setSortBy] = useState<SortOption>(SortOption.FOLLOWERS);
-    const [refreshKey, setRefreshKey] = useState(0);
-    const [showKeyInput, setShowKeyInput] = useState(false);
-    const [showToken, setShowToken] = useState(false);
+    const [refreshKey, _setRefreshKey] = useState(0);
     const [userSearchQuery, setUserSearchQuery] = useState("");
     const [isSearchingUser, setIsSearchingUser] = useState(false);
     const [modalUser, setModalUser] = useState<GitHubUserDetail | null>(null);
     const [modalRank, setModalRank] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoadingUserDetail, setIsLoadingUserDetail] = useState(false);
-    const [showPromoModal, setShowPromoModal] = useState(false);
     const [isPending, _startTransition] = useTransition();
     const modalOpenTimeRef = useRef<number | null>(null);
 
-    const { apiKey, setApiKey, saveApiKey } = useApiKey();
     const {
         users,
         loading,
+        loadingMore,
         error,
         totalCount,
-        rateLimitHit,
-        rateLimitResetAt,
-        loadingProgress,
-    } = useUsers(location, sortBy, apiKey, refreshKey);
-
-    useEffect(() => {
-        if (apiKey) return;
-
-        const hideUntil = localStorage.getItem("gitranked_promo_hide_until");
-        if (hideUntil) {
-            const hideUntilDate = Number.parseInt(hideUntil, 10);
-            if (Date.now() < hideUntilDate) {
-                return;
-            }
-        }
-
-        const timer = setTimeout(() => {
-            setShowPromoModal(true);
-            analytics.promoModalOpen();
-        }, 2500);
-
-        return () => clearTimeout(timer);
-    }, [apiKey]);
+        hasMore,
+        loadMore,
+    } = useUsers(location, sortBy, refreshKey);
 
     useEffect(() => {
         if (!searchParams.get("location")) {
@@ -97,7 +71,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
             const searchUsername = userSearchQuery.trim();
             setIsSearchingUser(true);
             try {
-                const user = await getUserByName(searchUsername, apiKey);
+                const user = await getUserByName(searchUsername);
                 if (user) {
                     analytics.userSearch(searchUsername, true);
                     setModalUser(user);
@@ -120,35 +94,6 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
         }
     };
 
-    const handleSaveApiKey = () => {
-        saveApiKey();
-        setShowKeyInput(false);
-        analytics.apiKeySave(!!apiKey);
-    };
-
-    const handleClosePromo = (hideForToday: boolean) => {
-        setShowPromoModal(false);
-        analytics.promoModalDismiss(hideForToday);
-        if (hideForToday) {
-            const tomorrow = Date.now() + 24 * 60 * 60 * 1000;
-            localStorage.setItem(
-                "gitranked_promo_hide_until",
-                tomorrow.toString(),
-            );
-        }
-    };
-
-    const handleSavePromoKey = (key: string) => {
-        setApiKey(key);
-        localStorage.setItem("gitranked_api_key", key);
-        setShowPromoModal(false);
-        analytics.promoModalSave();
-    };
-
-    const handleRefresh = useCallback(() => {
-        setRefreshKey((prev) => prev + 1);
-    }, []);
-
     const handleSortChange = useCallback((sort: SortOption) => {
         analytics.sortChange(sort);
         setSortBy(sort);
@@ -162,8 +107,6 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                 return "Top Profiles by Repositories";
             case SortOption.JOINED:
                 return "Newest Members";
-            case SortOption.CONTRIBUTIONS:
-                return "Top Contributors";
             default:
                 return "Top Profiles";
         }
@@ -173,32 +116,11 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
 
     return (
         <div className="min-h-screen font-sans text-apple-text bg-apple-bg selection:bg-apple-blue selection:text-white pb-20">
-            <RateLimitBanner
-                rateLimitHit={rateLimitHit}
-                resetAt={rateLimitResetAt}
-                onAddKey={() => {
-                    analytics.rateLimitAddKey();
-                    setShowKeyInput(true);
-                }}
-                onRefresh={handleRefresh}
-            />
-
             <PageNavigation
                 userSearchQuery={userSearchQuery}
                 onUserSearchChange={setUserSearchQuery}
                 isSearchingUser={isSearchingUser}
                 onUserSearchKeyDown={handleUserSearchKeyDown}
-                showKeyInput={showKeyInput}
-                onToggleKeyInput={() => {
-                    analytics.apiKeyToggle(showKeyInput ? "close" : "open");
-                    setShowKeyInput(!showKeyInput);
-                }}
-                showToken={showToken}
-                apiKey={apiKey}
-                onToggleShowToken={() => setShowToken(!showToken)}
-                onApiKeyChange={setApiKey}
-                onSaveApiKey={handleSaveApiKey}
-                hasApiKey={!!apiKey}
             />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -210,8 +132,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                             Leaderboard
                         </h1>
                         <p className="text-lg text-gray-500 mb-8 leading-relaxed">
-                            Find the most cracked devs in your local dev
-                            community.
+                            Find most cracked devs in your local dev community.
                         </p>
                         <LocationSearch
                             location={inputValue}
@@ -243,8 +164,10 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                         users={users}
                         sortBy={sortBy}
                         loading={isPending || loading}
+                        loadingMore={loadingMore}
                         error={error}
-                        loadingProgress={loadingProgress}
+                        hasMore={hasMore}
+                        onLoadMore={loadMore}
                         onUserClick={async (user) => {
                             const rank = users.indexOf(user) + 1;
                             analytics.userRowClick(user.login, rank);
@@ -257,7 +180,6 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                             try {
                                 const fullUser = await getUserByName(
                                     user.login,
-                                    apiKey,
                                 );
                                 if (fullUser) {
                                     setModalUser({
@@ -292,12 +214,6 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                     setModalRank(null);
                     modalOpenTimeRef.current = null;
                 }}
-            />
-
-            <TokenPromoModal
-                isOpen={showPromoModal}
-                onClose={handleClosePromo}
-                onSave={handleSavePromoKey}
             />
 
             <PageFooter

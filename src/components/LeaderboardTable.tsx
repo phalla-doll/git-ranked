@@ -8,7 +8,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
-import { memo } from "react";
+import { memo, useEffect, useRef } from "react";
 import { analytics } from "@/lib/analytics";
 import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
@@ -17,8 +17,10 @@ interface LeaderboardTableProps {
     users: GitHubUserDetail[];
     sortBy: SortOption;
     loading: boolean;
+    loadingMore?: boolean;
     error?: string | null;
-    loadingProgress?: { current: number; total: number } | null;
+    hasMore?: boolean;
+    onLoadMore?: () => void;
     onUserClick: (user: GitHubUserDetail) => void;
 }
 
@@ -75,10 +77,40 @@ export const LeaderboardTable = memo(
         users,
         sortBy,
         loading,
+        loadingMore,
         error,
-        loadingProgress,
+        hasMore,
+        onLoadMore,
         onUserClick,
     }: LeaderboardTableProps) => {
+        const sentinelRef = useRef<HTMLDivElement>(null);
+
+        useEffect(() => {
+            if (!hasMore || !onLoadMore) {
+                return;
+            }
+
+            const sentinel = sentinelRef.current;
+            if (!sentinel) {
+                return;
+            }
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    if (entries[0].isIntersecting) {
+                        onLoadMore();
+                    }
+                },
+                { rootMargin: "100px" },
+            );
+
+            observer.observe(sentinel);
+
+            return () => {
+                observer.disconnect();
+            };
+        }, [hasMore, onLoadMore]);
+
         if (loading) {
             return (
                 <div className="bg-white rounded-2xl border border-gray-100 flex flex-col items-center justify-center min-h-100">
@@ -90,14 +122,10 @@ export const LeaderboardTable = memo(
                             className="text-gray-400 animate-spin mb-4"
                         />
                         <p className="text-apple-text font-medium text-lg">
-                            {loadingProgress
-                                ? `Fetching all users… ${loadingProgress.current?.toLocaleString() || 0}/${loadingProgress.total?.toLocaleString() || 0}`
-                                : "Loading profiles…"}
+                            Loading profiles…
                         </p>
                         <p className="text-apple-gray text-sm mt-1">
-                            {loadingProgress
-                                ? "Sorting by contributions…"
-                                : "Analyzing GitHub data…"}
+                            Analyzing GitHub data…
                         </p>
                     </div>
                 </div>
@@ -326,6 +354,24 @@ export const LeaderboardTable = memo(
                         </tbody>
                     </table>
                 </div>
+
+                {hasMore && (
+                    <div
+                        ref={sentinelRef}
+                        className="h-10 flex items-center justify-center"
+                    >
+                        {loadingMore && (
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <HugeiconsIcon
+                                    icon={Loading03Icon}
+                                    size={16}
+                                    className="animate-spin"
+                                />
+                                Loading more…
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         );
     },

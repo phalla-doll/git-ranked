@@ -1,14 +1,13 @@
 # GitRanked
 
-A GitHub Developer Leaderboard that discovers and ranks top GitHub developers based on their location.
+A GitHub Developer Leaderboard that discovers and ranks top GitHub developers based on their location, powered by a Notion database.
 
 ## Features
 
 - **Location-based Search**: Search for GitHub developers by location with autocomplete suggestions
 - **Multi-sort Leaderboard**: Sort developers by followers, repositories, or join date
 - **User Profiles**: View detailed profile information including repos, followers, contributions, and stars
-- **Real-time GitHub Data**: Fetches live data from GitHub's REST and GraphQL APIs
-- **Rate Limit Management**: Handles GitHub API rate limits with optional personal API token support
+- **Notion-Powered Data**: Fetches curated data from a Notion database
 - **Pagination**: Navigate through results with 100 developers per page
 - **Statistics Dashboard**: View aggregate stats (total developers, top influence, total repositories)
 - **Responsive Design**: Mobile-friendly with Apple-inspired minimalist aesthetics
@@ -20,6 +19,7 @@ A GitHub Developer Leaderboard that discovers and ranks top GitHub developers ba
 - **React 19.2.3** - UI library
 - **TypeScript** - Type-safe development
 - **Tailwind CSS v4** - Utility-first CSS framework
+- **Notion SDK (@notionhq/client)** - Notion API integration
 - **Biome** - Linting and formatting
 - **LRU Cache** - API response caching (5-minute TTL)
 - **@hugeicons** - Icon library
@@ -37,6 +37,43 @@ pnpm install
 # or
 bun install
 ```
+
+### Notion Configuration
+
+To use this application, you need to set up a Notion integration and database:
+
+1. **Create a Notion Integration**:
+   - Go to [https://www.notion.so/my-integrations](https://www.notion.so/my-integrations)
+   - Click "New integration"
+   - Give it a name (e.g., "GitRanked")
+   - Copy the "Internal Integration Token"
+
+2. **Create a Notion Database**:
+   - Create a new database in Notion with the following properties:
+     - **Title**: `login` (GitHub username)
+     - **Rich Text**: `id`, `name`, `company`, `location`, `bio`
+     - **URL**: `avatar_url`, `html_url`
+     - **Email**: `email`
+     - **Number**: `public_repos`, `public_gists`, `followers`, `following`, `total_stars`, `recent_activity_count`
+     - **Date**: `created_at`
+
+3. **Share the Database**:
+   - Click the ••• menu at the top right of your database
+   - Select "Add connections"
+   - Search for and select your integration
+   - Copy the database ID from the URL (the part after the `/`)
+
+4. **Configure Environment Variables**:
+   - Create a `.env.local` file in the project root
+   - Add the following:
+     ```
+     NOTION_TOKEN=your_integration_token_here
+     NOTION_DATABASE_ID=your_database_id_here
+     ```
+
+5. **Populate the Database**:
+   - Add GitHub user data to the Notion database
+   - The application will fetch and display this data
 
 ### Development
 
@@ -68,24 +105,24 @@ npm start
 3. **Sort Results**: Use the dropdown to sort by followers, repositories, or join date
 4. **View Profiles**: Click on any developer to see detailed statistics and activity
 5. **Navigate Pages**: Use pagination controls to browse through results (100 per page)
+6. **Search for User**: Use the search bar to find a specific GitHub user
 
-## GitHub API Configuration
+## Data Source
 
-### Rate Limits
+This application uses a Notion database as its primary data source:
 
-- **Without API Token**: 60 requests/hour (GitHub's anonymous limit)
-- **With API Token**: 5,000 requests/hour
+- Data is curated and stored in Notion
+- No live GitHub API calls are made
+- All data is pre-filtered and cleaned
+- Updates are made directly in the Notion database
 
-### Adding a Personal Access Token
+## Notion API Limits
 
-To increase the API rate limit:
+The Notion API has the following rate limits:
 
-1. Go to [GitHub Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens)
-2. Create a new token (no scopes needed for public data)
-3. Enter the token in the application's API key panel
-4. The token is stored locally in your browser's `localStorage`
-
-The application will prompt you to add a token when you're approaching the rate limit.
+- **Rate Limit**: 3 requests per second
+- **Pagination**: 100 results per query
+- **Strategy**: The application implements caching to minimize API calls
 
 ## Development
 
@@ -103,11 +140,38 @@ npm run format
 
 ## Deployment
 
-The easiest way to deploy this Next.js app is using the [Vercel Platform](https://vercel.com/new):
+The easiest way to deploy this Next.js app is using [Vercel Platform](https://vercel.com/new):
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
 
+### Environment Variables
+
+When deploying, make sure to add the following environment variables:
+
+- `NOTION_TOKEN` - Your Notion integration token
+- `NOTION_DATABASE_ID` - Your Notion database ID
+
 Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Troubleshooting
+
+### "Notion database not configured" error
+
+- Ensure you have a `.env.local` file with both `NOTION_TOKEN` and `NOTION_DATABASE_ID`
+- Verify the database ID is correct (it should match your Notion database URL)
+- Make sure you've shared the database with your integration
+
+### "Failed to fetch data from Notion" error
+
+- Check that your Notion integration has proper permissions
+- Verify the database has all required properties
+- Check the Notion API status page for outages
+
+### No users showing up
+
+- Ensure your Notion database has data in it
+- Verify the property names match exactly what the application expects
+- Check the browser console for any error messages
 
 ## Learn More
 
@@ -116,4 +180,4 @@ To learn more about the technologies used:
 - [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API
 - [React Documentation](https://react.dev) - Learn about React
 - [Tailwind CSS](https://tailwindcss.com) - Learn about Tailwind CSS
-- [GitHub API](https://docs.github.com/en/rest) - Learn about GitHub's REST API
+- [Notion API Documentation](https://developers.notion.com) - Learn about Notion's API

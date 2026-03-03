@@ -1,179 +1,186 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { analytics } from "@/lib/analytics";
-import { searchUsersInLocation } from "@/lib/services/githubService";
 import type { GitHubUserDetail, SortOption } from "@/types";
-import { SortOption as SO } from "@/types";
 
-const MAX_FETCH = 100;
+const PAGE_SIZE = 100;
 const MAX_DISPLAY = 100;
 
 interface UsersCache {
     location: string;
     sortBy: SortOption;
-    hasApiKey: boolean;
     users: GitHubUserDetail[];
     totalCount: number;
 }
 
-const sortUsers = (
-    users: GitHubUserDetail[],
-    sortBy: SortOption,
-): GitHubUserDetail[] => {
-    return [...users].sort((a, b) => {
-        switch (sortBy) {
-            case SO.FOLLOWERS:
-                return (b.followers || 0) - (a.followers || 0);
-            case SO.REPOS:
-                return (b.public_repos || 0) - (a.public_repos || 0);
-            case SO.JOINED:
-                return (
-                    new Date(a.created_at || 0).getTime() -
-                    new Date(b.created_at || 0).getTime()
-                );
-            case SO.CONTRIBUTIONS:
-                return (
-                    (b.recent_activity_count || 0) -
-                    (a.recent_activity_count || 0)
-                );
-            default:
-                return 0;
-        }
-    });
-};
+interface SearchResponse {
+    users: GitHubUserDetail[];
+    total_count: number;
+    page: number;
+    page_size: number;
+    total_pages: number;
+    has_more: boolean;
+    error?: string;
+    errorType?: string;
+}
 
 export function useUsers(
     location: string,
     sortBy: SortOption,
-    apiKey: string,
-    refreshTrigger: number = 0,
+    _refreshTrigger: number = 0,
 ) {
     const [users, setUsers] = useState<GitHubUserDetail[]>([]);
+    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalCount, setTotalCount] = useState(0);
-    const [rateLimitHit, setRateLimitHit] = useState(false);
-    const [rateLimitResetAt, setRateLimitResetAt] = useState<number | null>(
-        null,
-    );
-    const [loadingProgress, setLoadingProgress] = useState<{
-        current: number;
-        total: number;
-    } | null>(null);
+    const [hasMore, setHasMore] = useState(false);
 
     const cacheRef = useRef<UsersCache | null>(null);
     const locationRef = useRef(location);
     const sortByRef = useRef(sortBy);
-    const apiKeyRef = useRef(apiKey);
 
     locationRef.current = location;
     sortByRef.current = sortBy;
-    apiKeyRef.current = apiKey;
 
-    const fetchAllUsersPaginated = useCallback(async () => {
-        setLoading(true);
-        setUsers([]);
-        setError(null);
-        setRateLimitHit(false);
-        setRateLimitResetAt(null);
-        setLoadingProgress({ current: 0, total: MAX_FETCH });
-
-        const allUsers: GitHubUserDetail[] = [];
-        let cursor: string | null = null;
-        let totalFetched = 0;
-
-        try {
-            while (totalFetched < MAX_FETCH) {
-                const result = await searchUsersInLocation(
-                    locationRef.current,
-                    sortByRef.current,
-                    1,
-                    apiKeyRef.current,
-                    cursor || undefined,
-                );
-
-                if (result.error) {
-                    setError(result.error);
-                    analytics.apiError(result.error);
-                    break;
-                }
-
-                if (result.rateLimited) {
-                    setRateLimitHit(true);
-                    setRateLimitResetAt(result.resetAt || null);
-                    setError(
-                        "API rate limit exceeded. Please try again later.",
-                    );
-                    analytics.rateLimitHit();
-                    break;
-                }
-
-                allUsers.push(...result.users);
-                totalFetched += result.users.length;
-
-                if (result.users.length === 0 || !result.hasNextPage) {
-                    break;
-                }
-
-                cursor = result.endCursor;
-                setLoadingProgress({
-                    current: totalFetched,
-                    total: Math.min(result.total_count, MAX_FETCH),
-                });
+    const fetchPage = useCallback(
+        async (pageNum: number, isLoadMore: boolean = false): Promise<void> => {
+            if (isLoadMore) {
+                setLoadingMore(true);
+            } else {
+                setLoading(true);
             }
 
-            const sortedUsers = sortUsers(allUsers, sortByRef.current);
+            try {
+                const params = new URLSearchParams({
+                    q: locationRef.current,
+                    sort: sortByRef.current,
+                    page: pageNum.toString(),
+                    pageSize: PAGE_SIZE.toString(),
+                });
 
-            cacheRef.current = {
-                location: locationRef.current,
-                sortBy: sortByRef.current,
-                hasApiKey: !!apiKeyRef.current,
-                users: sortedUsers,
-                totalCount: sortedUsers.length,
-            };
+                const response = await fetch(
+                    `/api/notion/users/search?${params}`,
+                );
 
-            setUsers(sortedUsers.slice(0, MAX_DISPLAY));
-            setTotalCount(sortedUsers.length);
-        } catch (err) {
-            console.error(err);
-            const errorMessage =
-                "An unexpected error occurred while processing your request.";
-            setError(errorMessage);
-            analytics.apiError(errorMessage);
-        } finally {
-            setLoading(false);
-            setLoadingProgress(null);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const errorMessage =
+                        errorData.error ||
+                        `HTTP error! status: ${response.status}`;
+                    throw new Error(errorMessage);
+                }
+
+                const data: SearchResponse = await response.json();
+
+                if (data.error) {
+                    setError(data.error);
+                    analytics.apiError(data.error);
+                    return;
+                }
+
+                const newUsers = data.users;
+
+                if (isLoadMore) {
+                    setUsers((prev) => [...prev, ...newUsers]);
+                } else {
+                    setUsers(newUsers);
+                }
+
+                setTotalCount(data.total_count);
+                setHasMore(data.has_more);
+                setError(null);
+
+                cacheRef.current = {
+                    location: locationRef.current,
+                    sortBy: sortByRef.current,
+                    users: isLoadMore
+                        ? [...(cacheRef.current?.users || []), ...newUsers]
+                        : newUsers,
+                    totalCount: data.total_count,
+                };
+            } catch (err) {
+                console.error(err);
+
+                let errorMessage =
+                    "An unexpected error occurred while processing your request.";
+
+                if (err instanceof Error) {
+                    if (
+                        err.message.includes("connection") ||
+                        err.message.includes("timeout") ||
+                        err.message.includes("circuit breaker") ||
+                        err.message.includes("rate limiting")
+                    ) {
+                        errorMessage =
+                            "Network error. Please check your connection and try again.";
+                    } else if (err.message.includes("Notion API")) {
+                        errorMessage =
+                            "Unable to fetch data. Please try again later.";
+                    } else {
+                        errorMessage = err.message;
+                    }
+                }
+
+                setError(errorMessage);
+                analytics.apiError(errorMessage);
+            } finally {
+                if (isLoadMore) {
+                    setLoadingMore(false);
+                } else {
+                    setLoading(false);
+                }
+            }
+        },
+        [],
+    );
+
+    const loadMore = useCallback(async () => {
+        if (loadingMore || !hasMore) {
+            return;
         }
-    }, []);
+        const nextPage = page + 1;
+        setPage(nextPage);
+        await fetchPage(nextPage, true);
+    }, [loadingMore, hasMore, page, fetchPage]);
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: refreshTrigger intentionally triggers re-fetch
-    useEffect(() => {
+    const reset = useCallback(async () => {
         setUsers([]);
-        setTotalCount(0);
+        setPage(1);
+        setHasMore(false);
+        setError(null);
 
         const cached = cacheRef.current;
 
         if (
             cached &&
-            cached.location === location &&
-            cached.sortBy === sortBy &&
-            cached.hasApiKey === !!apiKey
+            cached.location === locationRef.current &&
+            cached.sortBy === sortByRef.current
         ) {
             setUsers(cached.users.slice(0, MAX_DISPLAY));
             setTotalCount(cached.totalCount);
+            setPage(Math.ceil(cached.users.length / PAGE_SIZE));
+            setHasMore(cached.totalCount > PAGE_SIZE);
             return;
         }
 
         cacheRef.current = null;
-        fetchAllUsersPaginated();
-    }, [location, sortBy, fetchAllUsersPaginated, refreshTrigger, apiKey]);
+        await fetchPage(1, false);
+    }, [fetchPage]);
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies are needed to reset on changes
+    useEffect(() => {
+        reset();
+    }, [location, sortBy, _refreshTrigger, reset]);
 
     return {
-        users,
+        users: users.slice(0, MAX_DISPLAY),
+        allUsers: users,
         loading,
+        loadingMore,
         error,
         totalCount,
-        rateLimitHit,
-        rateLimitResetAt,
-        loadingProgress,
+        hasMore,
+        loadMore,
     };
 }

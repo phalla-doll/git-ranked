@@ -1,25 +1,12 @@
-import {
-    KeyIcon,
-    Loading03Icon,
-    Search01Icon,
-} from "@hugeicons/core-free-icons";
+import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
-import { ApiKeyPanel } from "./ApiKeyPanel";
 
 interface PageNavigationProps {
     userSearchQuery: string;
     onUserSearchChange: (query: string) => void;
     isSearchingUser: boolean;
     onUserSearchKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-    showKeyInput: boolean;
-    onToggleKeyInput: () => void;
-    showToken: boolean;
-    apiKey: string;
-    onToggleShowToken: () => void;
-    onApiKeyChange: (key: string) => void;
-    onSaveApiKey: () => void;
-    hasApiKey: boolean;
 }
 
 export function PageNavigation({
@@ -27,14 +14,6 @@ export function PageNavigation({
     onUserSearchChange,
     isSearchingUser,
     onUserSearchKeyDown,
-    showKeyInput,
-    onToggleKeyInput,
-    showToken,
-    apiKey,
-    onToggleShowToken,
-    onApiKeyChange,
-    onSaveApiKey,
-    hasApiKey,
 }: PageNavigationProps) {
     return (
         <nav className="glass-panel sticky top-0 z-40">
@@ -111,33 +90,8 @@ export function PageNavigation({
                                 strokeWidth={1.5}
                             />
                         </button>
-
-                        <button
-                            type="button"
-                            onClick={onToggleKeyInput}
-                            className={`p-2.5 rounded-full transition-all min-h-11 min-w-11 flex items-center justify-center ${hasApiKey ? "text-apple-blue bg-blue-50" : "text-gray-500 hover:bg-gray-100"}`}
-                            title="API Settings"
-                            aria-label="API Settings"
-                        >
-                            <HugeiconsIcon
-                                icon={KeyIcon}
-                                size={20}
-                                color="currentColor"
-                                strokeWidth={1.5}
-                            />
-                        </button>
                     </div>
                 </div>
-
-                {showKeyInput && (
-                    <ApiKeyPanel
-                        showToken={showToken}
-                        apiKey={apiKey}
-                        onToggleShowToken={onToggleShowToken}
-                        onApiKeyChange={onApiKeyChange}
-                        onSave={onSaveApiKey}
-                    />
-                )}
             </div>
         </nav>
     );

@@ -1,29 +1,8 @@
-import { LRUCache } from "lru-cache";
 import { cache } from "react";
-import type {
-    GitHubEvent,
-    GitHubRepository,
-    GitHubUserDetail,
-    GraphQLRepositoryNode,
-    SortOption,
-} from "@/types";
+import type { GitHubEvent, GitHubRepository, GitHubUserDetail } from "@/types";
 
 const BASE_URL = "https://api.github.com";
 const GRAPHQL_URL = "https://api.github.com/graphql";
-
-const searchCache = new LRUCache<
-    string,
-    {
-        users: GitHubUserDetail[];
-        total_count: number;
-        rateLimited: boolean;
-        resetAt?: number;
-        error?: string;
-    }
->({
-    max: 100,
-    ttl: 5 * 60 * 1000,
-});
 
 const calculateCommitsFromEvents = (events: GitHubEvent[]): number => {
     if (!Array.isArray(events)) return 0;
@@ -97,8 +76,10 @@ export const getUserByName = cache(
                         const data = result.data.user;
                         const totalStars =
                             data.repositories?.nodes?.reduce(
-                                (acc: number, repo: GraphQLRepositoryNode) =>
-                                    acc + (repo.stargazerCount || 0),
+                                (acc: number, repo: unknown) =>
+                                    acc +
+                                    ((repo as { stargazerCount?: number })
+                                        ?.stargazerCount || 0),
                                 0,
                             ) || 0;
 
@@ -179,78 +160,6 @@ export const getUserByName = cache(
         } catch (error) {
             console.error("Error fetching user:", error);
             return null;
-        }
-    },
-);
-
-export const searchUsersInLocation = cache(
-    async (
-        query: string,
-        sort: SortOption,
-        page: number = 1,
-        apiKey?: string,
-        after?: string,
-    ): Promise<{
-        users: GitHubUserDetail[];
-        total_count: number;
-        hasNextPage: boolean;
-        endCursor: string | null;
-        rateLimited: boolean;
-        resetAt?: number;
-        error?: string;
-    }> => {
-        const cacheKey = `${query}:${sort}:${page}:${after || "none"}:${apiKey ? "user-key" : "server-key"}`;
-        const cached = searchCache.get(cacheKey);
-        if (cached) {
-            return cached as {
-                users: GitHubUserDetail[];
-                total_count: number;
-                hasNextPage: boolean;
-                endCursor: string | null;
-                rateLimited: boolean;
-                resetAt?: number;
-                error?: string;
-            };
-        }
-
-        try {
-            const response = await fetch("/api/github/search", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    query,
-                    sort,
-                    cursor: after,
-                    userToken: apiKey,
-                }),
-            });
-
-            const result = await response.json();
-
-            const finalResult = {
-                users: result.users || [],
-                total_count: result.total_count || 0,
-                hasNextPage: result.hasNextPage || false,
-                endCursor: result.endCursor || null,
-                rateLimited: result.rateLimited || false,
-                resetAt: result.resetAt,
-                error: result.error,
-            };
-
-            searchCache.set(cacheKey, finalResult);
-            return finalResult;
-        } catch (error) {
-            return {
-                users: [],
-                total_count: 0,
-                hasNextPage: false,
-                endCursor: null,
-                rateLimited: false,
-                error:
-                    error instanceof Error ? error.message : "Request failed",
-            };
         }
     },
 );
