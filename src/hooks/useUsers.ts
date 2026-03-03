@@ -174,7 +174,7 @@ export function useUsers(
     }, [location, sortBy, _refreshTrigger, reset]);
 
     return {
-        users: users.slice(0, MAX_DISPLAY),
+        users,
         allUsers: users,
         loading,
         loadingMore,
