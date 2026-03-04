@@ -7,7 +7,6 @@ import { LocationSearch } from "@/components/LocationSearch";
 import { PageFooter } from "@/components/PageFooter";
 import { PageNavigation } from "@/components/PageNavigation";
 import { SortOptions } from "@/components/SortOptions";
-import { StatsGrid } from "@/components/StatsGrid";
 import { UserModal } from "@/components/UserModal";
 import { useUsers } from "@/hooks/useUsers";
 import { analytics } from "@/lib/analytics";
@@ -151,11 +150,11 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                     </div>
                 </div>
 
-                <StatsGrid
+                {/*<StatsGrid
                     totalCount={totalCount}
                     users={users}
                     sortBy={sortBy}
-                />
+                />*/}
 
                 <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-1 gap-4">

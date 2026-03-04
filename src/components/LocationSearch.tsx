@@ -50,6 +50,9 @@ export function LocationSearch({
                     </button>
                 </div>
             </div>
+            <p className="text-sm text-gray-400 mt-2">
+                Search function is temporarily disabled
+            </p>
         </form>
     );
 }
