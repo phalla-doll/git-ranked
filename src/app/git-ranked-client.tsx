@@ -163,8 +163,8 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                                 {getListTitle()}
                             </h2>
                             <p className="text-sm text-gray-500 mt-1">
-                                Last update ranking was 02 Mar. Click on user to
-                                see the latest update.
+                                Rankings last updated: Mar 2. Click on a user to
+                                see their latest data.
                             </p>
                         </div>
 
