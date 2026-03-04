@@ -158,9 +158,15 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
 
                 <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-1 gap-4">
-                        <h2 className="text-lg font-medium text-apple-text">
-                            {getListTitle()}
-                        </h2>
+                        <div>
+                            <h2 className="text-lg font-medium text-apple-text">
+                                {getListTitle()}
+                            </h2>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Last update ranking was 02 Mar. Click on user to
+                                see the latest update.
+                            </p>
+                        </div>
 
                         <SortOptions
                             sortBy={sortBy}
