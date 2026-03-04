@@ -159,7 +159,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                 <div className="space-y-4">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-1 gap-4">
                         <div>
-                            <h2 className="text-lg font-medium text-apple-text">
+                            <h2 className="text-xl font-medium text-apple-text">
                                 {getListTitle()}
                             </h2>
                             <p className="text-sm text-gray-500 mt-1">
