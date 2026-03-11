@@ -17,6 +17,25 @@ interface GitRankedClientProps {
     initialLocation: string;
 }
 
+const LAST_UPDATED_DATE = "2026-03-11";
+
+function formatRelativeTime(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 30) {
+        return `${diffDays} days ago`;
+    } else if (diffDays < 365) {
+        const months = Math.floor(diffDays / 30);
+        return `${months} month${months > 1 ? 's' : ''} ago`;
+    } else {
+        const years = Math.floor(diffDays / 365);
+        return `${years} year${years > 1 ? 's' : ''} ago`;
+    }
+}
+
 export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -163,7 +182,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                                 {getListTitle()}
                             </h2>
                             <p className="text-sm text-gray-500 mt-1">
-                                Rankings last updated: Mar 11. Click on a user to
+                                Rankings last updated: {formatRelativeTime(LAST_UPDATED_DATE)}. Click on a user to
                                 see their latest data.
                             </p>
                         </div>
