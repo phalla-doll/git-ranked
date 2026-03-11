@@ -194,7 +194,7 @@ export const LeaderboardTable = memo(
                                     Repos
                                 </th>
                                 <th className="px-6 py-4 text-right w-32 hidden lg:table-cell  text-xs font-normal tracking-wide text-gray-500 uppercase">
-                                    Contribs
+                                    Gists
                                 </th>
                                 <th className="px-6 py-4 w-12"></th>
                             </tr>
@@ -318,10 +318,7 @@ export const LeaderboardTable = memo(
                                         <td className="px-6 py-4 text-right hidden lg:table-cell">
                                             <div className="flex flex-col items-end">
                                                 <span className="font-medium text-gray-700">
-                                                    {user.recent_activity_count !==
-                                                    undefined
-                                                        ? user.recent_activity_count.toLocaleString()
-                                                        : "-"}
+                                                    {user.public_gists.toLocaleString()}
                                                 </span>
                                             </div>
                                         </td>
