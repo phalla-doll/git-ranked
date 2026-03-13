@@ -1,7 +1,6 @@
 import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
-import { analytics } from "@/lib/analytics";
 
 interface PageFooterProps {
     location: string;
