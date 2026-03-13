@@ -82,7 +82,7 @@ export function PageFooter({
                 </div>
             </div>
 
-            <div className="mt-10 pt-6 border-t border-gray-100 text-center">
+            {/* <div className="mt-10 pt-6 border-t border-gray-100 text-center">
                 <p className="text-xs text-gray-500">
                     Crafted for fun and kept alive by{" "}
                     <a
@@ -95,7 +95,7 @@ export function PageFooter({
                         Mantha
                     </a>
                 </p>
-            </div>
+            </div> */}
         </footer>
     );
 }
