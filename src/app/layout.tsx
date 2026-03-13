@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://git-ranked-cambodia.vercel.app/"),
+    metadataBase: new URL("https://gitranked.manthaa.dev/"),
     title: {
         default: "GitRanked Cambodia - Developer Leaderboard",
         template: "%s | GitRanked",
@@ -44,18 +44,18 @@ export const metadata: Metadata = {
         },
     },
     alternates: {
-        canonical: "https://git-ranked-cambodia.vercel.app/",
+        canonical: "https://gitranked.manthaa.dev/",
     },
     openGraph: {
         type: "website",
         siteName: "GitRanked",
         title: "GitRanked Cambodia - Developer Leaderboard",
         description: "Find the most cracked devs in your local dev community.",
-        url: "https://git-ranked-cambodia.vercel.app/",
+        url: "https://gitranked.manthaa.dev/",
         locale: "en_US",
         images: [
             {
-                url: "https://git-ranked-cambodia.vercel.app/gitranked-og-main.png",
+                url: "https://gitranked.manthaa.dev/gitranked-og-main.png",
                 width: 1200,
                 height: 630,
             },
@@ -63,9 +63,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        images: [
-            "https://git-ranked-cambodia.vercel.app/gitranked-og-main.png",
-        ],
+        images: ["https://gitranked.manthaa.dev/gitranked-og-main.png"],
     },
     appleWebApp: {
         capable: true,

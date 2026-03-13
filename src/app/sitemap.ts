@@ -40,7 +40,7 @@ const POPULAR_LOCATIONS = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = "https://git-ranked-cambodia.vercel.app";
+    const baseUrl = "https://gitranked.manthaa.dev";
 
     const locationUrls = POPULAR_LOCATIONS.map((location) => ({
         url: `${baseUrl}/?location=${encodeURIComponent(location)}`,

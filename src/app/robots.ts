@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
             userAgent: "*",
             allow: "/",
         },
-        sitemap: "https://git-ranked-cambodia.vercel.app/sitemap.xml",
+        sitemap: "https://gitranked.manthaa.dev/sitemap.xml",
     };
 }

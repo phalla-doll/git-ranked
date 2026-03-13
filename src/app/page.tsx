@@ -16,7 +16,9 @@ export async function generateMetadata({
 
     const title = `GitRanked ${formattedLocation} - Developer Leaderboard`;
     const description = `Find the most cracked devs in ${formattedLocation}'s dev community.`;
-    const url = `https://git-ranked-cambodia.vercel.app/?location=${encodeURIComponent(location)}`;
+    const url = `https://gitranked.manthaa.dev/?location=${encodeURIComponent(
+        location,
+    )}`;
 
     return {
         title,
@@ -27,7 +29,7 @@ export async function generateMetadata({
             url,
             images: [
                 {
-                    url: "https://git-ranked-cambodia.vercel.app/gitranked-og-main.png",
+                    url: "https://gitranked.manthaa.dev/gitranked-og-main.png",
                     width: 1200,
                     height: 630,
                 },
