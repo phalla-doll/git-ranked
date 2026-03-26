@@ -171,6 +171,51 @@ function mapNotionToGitHubUser(page: any): GitHubUserDetail | null {
     }
 }
 
+let cachedDataSourceId: string | null = null;
+
+async function getDataSourceId(databaseId: string): Promise<string> {
+    if (cachedDataSourceId) {
+        return cachedDataSourceId;
+    }
+
+    const token = process.env.NOTION_TOKEN;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    const response = await fetch(`${NOTION_API_URL}/databases/${databaseId}`, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Notion-Version": "2025-09-03",
+        },
+        signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+            `Failed to fetch database: ${response.status} - ${errorText}`,
+        );
+    }
+
+    const data = await response.json();
+    const dataSources = data.data_sources || [];
+
+    if (dataSources.length === 0) {
+        throw new Error("No data sources found for database");
+    }
+
+    const dataSourceId = dataSources[0].id;
+    cachedDataSourceId = dataSourceId;
+    console.log(
+        `Using data source: ${dataSourceId} (${dataSources[0].name || "unnamed"})`,
+    );
+    return dataSourceId;
+}
+
 async function queryNotionDatabase(
     databaseId: string,
     body?: any,
@@ -179,6 +224,7 @@ async function queryNotionDatabase(
     validateNotionConfig();
 
     const token = process.env.NOTION_TOKEN;
+    const dataSourceId = await getDataSourceId(databaseId);
 
     const requestBody: any = {
         page_size: 100,
@@ -190,13 +236,13 @@ async function queryNotionDatabase(
         const timeoutId = setTimeout(() => controller.abort(), 30000);
 
         const response = await fetchWithRetry(
-            `${NOTION_API_URL}/databases/${databaseId}/query`,
+            `${NOTION_API_URL}/data_sources/${dataSourceId}/query`,
             {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
-                    "Notion-Version": "2022-06-28",
+                    "Notion-Version": "2025-09-03",
                 },
                 body: JSON.stringify(requestBody),
                 signal: controller.signal,
