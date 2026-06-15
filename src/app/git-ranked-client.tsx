@@ -17,10 +17,11 @@ interface GitRankedClientProps {
     initialLocation: string;
 }
 
-const LAST_UPDATED_DATE = "2026-03-26";
-
 function formatRelativeTime(dateString: string): string {
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) {
+        return "recently";
+    }
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -41,7 +42,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const searchParams = useSearchParams();
     const [location, setLocation] = useState(initialLocation);
     const [inputValue, setInputValue] = useState(initialLocation);
-    const [sortBy, setSortBy] = useState<SortOption>(SortOption.FOLLOWERS);
+    const [sortBy, setSortBy] = useState<SortOption>(SortOption.CONTRIBUTIONS);
     const [refreshKey, _setRefreshKey] = useState(0);
     const [userSearchQuery, setUserSearchQuery] = useState("");
     const [isSearchingUser, setIsSearchingUser] = useState(false);
@@ -58,6 +59,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
         loadingMore,
         error,
         totalCount,
+        dataAsof,
         hasMore,
         loadMore,
     } = useUsers(location, sortBy, refreshKey);
@@ -134,6 +136,8 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                 return "Top Profiles by Repositories";
             case SortOption.JOINED:
                 return "Newest Members";
+            case SortOption.CONTRIBUTIONS:
+                return "Top Contributors";
             default:
                 return "Top Profiles";
         }
@@ -183,8 +187,10 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
                             </h2>
                             <p className="text-sm text-gray-500 mt-1">
                                 Rankings last updated:{" "}
-                                {formatRelativeTime(LAST_UPDATED_DATE)}. Click
-                                on a user to see their latest data.
+                                {dataAsof
+                                    ? formatRelativeTime(dataAsof)
+                                    : "recently"}
+                                . Click on a user to see their latest data.
                             </p>
                         </div>
 

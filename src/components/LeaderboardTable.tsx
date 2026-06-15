@@ -187,6 +187,9 @@ export const LeaderboardTable = memo(
                                 <th className="px-6 py-4  text-xs font-normal tracking-wide text-gray-500 uppercase">
                                     Developer
                                 </th>
+                                <th className="px-6 py-4 text-right w-32  text-xs font-normal tracking-wide text-gray-500 uppercase">
+                                    Contributions
+                                </th>
                                 <th className="px-6 py-4 text-right w-32 hidden sm:table-cell  text-xs font-normal tracking-wide text-gray-500 uppercase">
                                     Followers
                                 </th>
@@ -269,19 +272,40 @@ export const LeaderboardTable = memo(
                                                     </div>
                                                     <div className="flex items-center gap-3 mt-1.5 sm:hidden">
                                                         <span
+                                                            className={`text-xs font-medium ${sortBy === SortOption.CONTRIBUTIONS ? "text-apple-blue" : "text-gray-500"}`}
+                                                        >
+                                                            {(
+                                                                user.recent_activity_count ??
+                                                                0
+                                                            ).toLocaleString()}{" "}
+                                                            contributions
+                                                        </span>
+                                                        <span
                                                             className={`text-xs font-medium ${sortBy === SortOption.FOLLOWERS ? "text-apple-blue" : "text-gray-500"}`}
                                                         >
                                                             {user.followers.toLocaleString()}{" "}
                                                             followers
                                                         </span>
-                                                        <span
-                                                            className={`text-xs font-medium ${sortBy === SortOption.REPOS ? "text-apple-blue" : "text-gray-500"}`}
-                                                        >
-                                                            {user.public_repos.toLocaleString()}{" "}
-                                                            repos
-                                                        </span>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </td>
+
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex flex-col items-end">
+                                                <span
+                                                    className={`font-medium ${
+                                                        sortBy ===
+                                                        SortOption.CONTRIBUTIONS
+                                                            ? "text-apple-blue"
+                                                            : "text-gray-700"
+                                                    }`}
+                                                >
+                                                    {(
+                                                        user.recent_activity_count ??
+                                                        0
+                                                    ).toLocaleString()}
+                                                </span>
                                             </div>
                                         </td>
 

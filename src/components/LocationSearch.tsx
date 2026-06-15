@@ -40,15 +40,6 @@ export function LocationSearch({
                     autoComplete="off"
                     aria-label="Search by location"
                 />
-                <div className="absolute inset-y-2 right-2">
-                    <button
-                        disabled
-                        type="submit"
-                        className="h-full px-6 bg-apple-blue hover:bg-apple-blueHover text-white rounded-xl text-sm font-medium transition-colors shadow-lg shadow-blue-500/20 flex items-center gap-2"
-                    >
-                        Search
-                    </button>
-                </div>
             </div>
             <p className="text-sm text-gray-400 mt-2">
                 Search function is temporarily disabled

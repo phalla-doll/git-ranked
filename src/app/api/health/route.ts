@@ -1,33 +1,19 @@
 import { NextResponse } from "next/server";
 
+const COMMITTERS_HEALTH_URL = "https://committers.top/rank_only/cambodia.json";
+
 export async function GET() {
     try {
-        const token = process.env.NOTION_TOKEN;
-        const databaseId = process.env.NOTION_DATABASE_ID;
+        const token = process.env.GITHUB_TOKEN;
 
         if (!token) {
             return NextResponse.json(
                 {
                     status: "unhealthy",
-                    error: "Missing NOTION_TOKEN environment variable",
+                    error: "Missing GITHUB_TOKEN environment variable",
                     checks: {
-                        notionToken: false,
-                        notionDatabaseId: !!databaseId,
-                    },
-                    timestamp: new Date().toISOString(),
-                },
-                { status: 500 },
-            );
-        }
-
-        if (!databaseId) {
-            return NextResponse.json(
-                {
-                    status: "unhealthy",
-                    error: "Missing NOTION_DATABASE_ID environment variable",
-                    checks: {
-                        notionToken: true,
-                        notionDatabaseId: false,
+                        githubToken: false,
+                        committersApi: false,
                     },
                     timestamp: new Date().toISOString(),
                 },
@@ -38,10 +24,9 @@ export async function GET() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-        const response = await fetch("https://api.notion.com/v1/users/me", {
+        const response = await fetch(COMMITTERS_HEALTH_URL, {
             headers: {
-                Authorization: `Bearer ${token}`,
-                "Notion-Version": "2022-06-28",
+                "User-Agent": "git-ranked/1.0 (+https://gitranked.manthaa.dev)",
             },
             signal: controller.signal,
         });
@@ -53,13 +38,12 @@ export async function GET() {
             return NextResponse.json(
                 {
                     status: "unhealthy",
-                    error: "Notion API authentication failed",
+                    error: "Ranking data source (committers.top) unreachable",
                     statusCode: response.status,
                     errorDetail: errorText,
                     checks: {
-                        notionToken: true,
-                        notionDatabaseId: true,
-                        notionApi: false,
+                        githubToken: true,
+                        committersApi: false,
                     },
                     timestamp: new Date().toISOString(),
                 },
@@ -70,9 +54,8 @@ export async function GET() {
         return NextResponse.json({
             status: "healthy",
             checks: {
-                notionToken: true,
-                notionDatabaseId: true,
-                notionApi: true,
+                githubToken: true,
+                committersApi: true,
             },
             timestamp: new Date().toISOString(),
         });
@@ -88,9 +71,8 @@ export async function GET() {
                 error: errorMessage,
                 errorType: error instanceof Error ? error.name : "Unknown",
                 checks: {
-                    notionToken: !!process.env.NOTION_TOKEN,
-                    notionDatabaseId: !!process.env.NOTION_DATABASE_ID,
-                    notionApi: false,
+                    githubToken: !!process.env.GITHUB_TOKEN,
+                    committersApi: false,
                 },
                 timestamp: new Date().toISOString(),
             },
