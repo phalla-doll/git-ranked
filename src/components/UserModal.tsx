@@ -1,12 +1,10 @@
 import {
-    Award01Icon,
     Calendar01Icon,
     Cancel01Icon,
     Github01Icon,
     Link01Icon,
     Loading03Icon,
     Location01Icon,
-    Medal01Icon,
     OfficeIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -24,46 +22,18 @@ interface UserModalProps {
 
 const RankBadge = ({ rank }: { rank: number }) => {
     let colorClass = "text-gray-500 font-medium";
-    let icon = null;
 
     if (rank === 1) {
         colorClass = "text-yellow-600 font-medium";
-        icon = (
-            <HugeiconsIcon
-                icon={Award01Icon}
-                size={28}
-                color="#EAB308"
-                strokeWidth={1.5}
-                className="fill-yellow-500/20"
-            />
-        );
     } else if (rank === 2) {
         colorClass = "text-gray-600 font-medium";
-        icon = (
-            <HugeiconsIcon
-                icon={Medal01Icon}
-                size={28}
-                color="#9CA3AF"
-                strokeWidth={1.5}
-                className="fill-gray-400/20"
-            />
-        );
     } else if (rank === 3) {
         colorClass = "text-orange-700 font-medium";
-        icon = (
-            <HugeiconsIcon
-                icon={Medal01Icon}
-                size={28}
-                color="#F97316"
-                strokeWidth={1.5}
-                className="fill-orange-500/20"
-            />
-        );
     }
 
     return (
         <div className={`flex items-center gap-1.5 ${colorClass}`}>
-            {icon ? icon : <span className="text-2xl">#{rank}</span>}
+            <span className="text-2xl">#{rank}</span>
         </div>
     );
 };
