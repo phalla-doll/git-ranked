@@ -3,7 +3,7 @@ import { analytics } from "@/lib/analytics";
 import type { GitHubUserDetail, SortOption } from "@/types";
 
 const PAGE_SIZE = 100;
-const MAX_DISPLAY = 100;
+const MAX_DISPLAY = 500;
 
 interface UsersCache {
     location: string;
