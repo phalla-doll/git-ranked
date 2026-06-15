@@ -1,9 +1,7 @@
 import {
     AlertDiamondIcon,
     ArrowUpRight01Icon,
-    Award01Icon,
     Loading03Icon,
-    Medal01Icon,
     Search01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -26,48 +24,20 @@ interface LeaderboardTableProps {
 
 const RankBadge = ({ rank }: { rank: number }) => {
     let colorClass = "text-gray-500 font-medium";
-    let icon = null;
 
     if (rank === 1) {
-        colorClass = "text-yellow-600 font-medium scale-110";
-        icon = (
-            <HugeiconsIcon
-                icon={Award01Icon}
-                size={20}
-                color="#EAB308"
-                strokeWidth={1.5}
-                className="fill-yellow-500/20"
-            />
-        );
+        colorClass = "text-yellow-600 font-medium";
     } else if (rank === 2) {
-        colorClass = "text-gray-600 font-medium scale-105";
-        icon = (
-            <HugeiconsIcon
-                icon={Medal01Icon}
-                size={20}
-                color="#9CA3AF"
-                strokeWidth={1.5}
-                className="fill-gray-400/20"
-            />
-        );
+        colorClass = "text-gray-600 font-medium";
     } else if (rank === 3) {
-        colorClass = "text-orange-700 font-medium scale-105";
-        icon = (
-            <HugeiconsIcon
-                icon={Medal01Icon}
-                size={20}
-                color="#F97316"
-                strokeWidth={1.5}
-                className="fill-orange-500/20"
-            />
-        );
+        colorClass = "text-orange-700 font-medium";
     }
 
     return (
         <div
             className={`flex items-center justify-center gap-1.5 w-8 ${colorClass}`}
         >
-            {icon ? icon : <span className="w-4 text-center">#{rank}</span>}
+            <span className="w-4 text-center">#{rank}</span>
         </div>
     );
 };
