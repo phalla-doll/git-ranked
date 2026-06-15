@@ -188,7 +188,7 @@ export const UserModal = ({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 divide-x divide-gray-200 pt-3">
+                                <div className="grid grid-cols-3 divide-x divide-gray-200 pt-3">
                                     <div className="text-center px-1">
                                         <div className="text-lg font-medium text-apple-text">
                                             {isLoading ? (
@@ -220,6 +220,27 @@ export const UserModal = ({
                                         </div>
                                         <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
                                             Contribs
+                                        </div>
+                                    </div>
+                                    <div className="text-center px-1">
+                                        <div className="flex items-center justify-center gap-1 text-lg font-medium text-apple-text">
+                                            {isLoading ? (
+                                                <div className="h-7 flex items-center justify-center">
+                                                    <HugeiconsIcon
+                                                        icon={Loading03Icon}
+                                                        size={20}
+                                                        color="currentColor"
+                                                        className="text-gray-600 animate-spin"
+                                                    />
+                                                </div>
+                                            ) : user.contribution_streak ? (
+                                                `${user.contribution_streak}d`
+                                            ) : (
+                                                "-"
+                                            )}
+                                        </div>
+                                        <div className="text-[10px] text-gray-400 uppercase font-medium mt-1">
+                                            Streak
                                         </div>
                                     </div>
                                 </div>

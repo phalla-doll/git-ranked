@@ -66,7 +66,15 @@ export const getUserByName = cache(
                       }
                     }
                     contributionsCollection(from: $fromDate, to: $toDate) {
-                      contributionCalendar { totalContributions }
+                      contributionCalendar {
+                        totalContributions
+                        weeks {
+                          contributionDays {
+                            date
+                            contributionCount
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -157,6 +165,10 @@ export const getUserByName = cache(
                                     ?.contributionCalendar
                                     ?.totalContributions || 0,
                             total_stars: totalStars,
+                            contribution_streak: computeCurrentStreak(
+                                data.contributionsCollection
+                                    ?.contributionCalendar?.weeks,
+                            ),
                         };
 
                         console.log(
@@ -323,6 +335,48 @@ export interface GitHubLightUser {
     followers: number;
     following: number;
     created_at: string | null;
+}
+
+interface ContributionDay {
+    date?: string;
+    contributionCount?: number;
+}
+
+interface ContributionWeek {
+    contributionDays?: ContributionDay[];
+}
+
+/**
+ * Computes the current contribution streak (consecutive days ending at the
+ * most recent day with at least one contribution) from a GitHub contribution
+ * calendar. The calendar covers a rolling ~1 year, so streaks are capped at
+ * that window. Today is allowed to have zero contributions without breaking
+ * the streak, since the day may simply not be over yet.
+ */
+function computeCurrentStreak(weeks: ContributionWeek[] | undefined): number {
+    if (!Array.isArray(weeks)) return 0;
+
+    const days = weeks
+        .flatMap((week) => week?.contributionDays ?? [])
+        .filter((day): day is Required<ContributionDay> => Boolean(day?.date))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (days.length === 0) return 0;
+
+    let streak = 0;
+    // Walk backwards from the most recent day. Skip a trailing zero-count
+    // "today" so an in-progress day doesn't reset the streak to 0.
+    for (let i = days.length - 1; i >= 0; i--) {
+        const count = days[i].contributionCount ?? 0;
+        if (count > 0) {
+            streak++;
+        } else if (i === days.length - 1) {
+        } else {
+            break;
+        }
+    }
+
+    return streak;
 }
 
 const LIGHT_USER_FIELDS = `

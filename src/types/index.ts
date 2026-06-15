@@ -46,6 +46,7 @@ export interface GitHubUserDetail {
     created_at: string;
     recent_activity_count?: number;
     total_stars?: number;
+    contribution_streak?: number;
 }
 
 export interface SearchResponse {
