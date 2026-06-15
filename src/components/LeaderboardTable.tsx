@@ -22,22 +22,50 @@ interface LeaderboardTableProps {
     onUserClick: (user: GitHubUserDetail) => void;
 }
 
-const RankBadge = ({ rank }: { rank: number }) => {
-    let colorClass = "text-gray-500 font-medium";
-
+const rankColorClass = (rank: number) => {
     if (rank === 1) {
-        colorClass = "text-yellow-600 font-medium";
-    } else if (rank === 2) {
-        colorClass = "text-gray-600 font-medium";
-    } else if (rank === 3) {
-        colorClass = "text-orange-700 font-medium";
+        return "text-yellow-600";
     }
+    if (rank === 2) {
+        return "text-gray-600";
+    }
+    if (rank === 3) {
+        return "text-orange-700";
+    }
+    return "text-gray-500";
+};
 
+const RankBadge = ({ rank }: { rank: number }) => {
     return (
         <div
-            className={`flex items-center justify-center gap-1.5 w-8 ${colorClass}`}
+            className={`flex items-center justify-center gap-1.5 w-8 font-medium ${rankColorClass(rank)}`}
         >
             <span className="w-4 text-center">#{rank}</span>
+        </div>
+    );
+};
+
+const MobileStat = ({
+    label,
+    value,
+    highlighted = false,
+}: {
+    label: string;
+    value: number;
+    highlighted?: boolean;
+}) => {
+    return (
+        <div className="flex flex-col items-center text-center gap-0.5 min-w-0">
+            <span
+                className={`text-sm font-semibold tabular-nums ${
+                    highlighted ? "text-apple-blue" : "text-gray-700"
+                }`}
+            >
+                {value.toLocaleString()}
+            </span>
+            <span className="text-[10px] tracking-wide text-gray-400 uppercase truncate w-full">
+                {label}
+            </span>
         </div>
     );
 };
@@ -147,7 +175,98 @@ export const LeaderboardTable = memo(
 
         return (
             <div className="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden relative min-h-125">
-                <div className="overflow-x-auto">
+                {/* Mobile: stacked card layout — shows all fields without horizontal scroll */}
+                <ul className="divide-y divide-gray-100 md:hidden">
+                    {users.map((user, index) => {
+                        return (
+                            <li
+                                key={user.login || user.id || `user-m-${index}`}
+                            >
+                                <button
+                                    type="button"
+                                    onClick={() => onUserClick(user)}
+                                    className="group w-full px-4 py-3.5 text-left hover:bg-blue-50/30 transition-colors duration-200"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative shrink-0">
+                                            <Image
+                                                src={
+                                                    user.avatar_url ||
+                                                    `https://ui-avatars.com/api/?name=${user.login}&background=random`
+                                                }
+                                                alt={
+                                                    user.login || "User avatar"
+                                                }
+                                                width={40}
+                                                height={40}
+                                                className="w-10 h-10 rounded-full border border-gray-200 bg-gray-50 object-cover shadow-sm"
+                                                loading="lazy"
+                                            />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <h3 className="font-medium text-apple-text truncate">
+                                                {user.name || user.login}
+                                            </h3>
+                                            <a
+                                                href={`https://github.com/${user.login}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    analytics.githubProfileClick(
+                                                        user.login,
+                                                        "table",
+                                                    );
+                                                }}
+                                                className="text-xs text-gray-400 hover:text-gray-600 transition-colors truncate block"
+                                            >
+                                                @{user.login}
+                                            </a>
+                                        </div>
+                                        <span
+                                            className={`shrink-0 text-lg font-semibold tabular-nums leading-none ${rankColorClass(index + 1)}`}
+                                        >
+                                            #{index + 1}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-4 gap-1 mt-3 rounded-xl bg-gray-50/60 px-2 py-2.5">
+                                        <MobileStat
+                                            label="Contributions"
+                                            value={
+                                                user.recent_activity_count ?? 0
+                                            }
+                                            highlighted={
+                                                sortBy ===
+                                                SortOption.CONTRIBUTIONS
+                                            }
+                                        />
+                                        <MobileStat
+                                            label="Followers"
+                                            value={user.followers}
+                                            highlighted={
+                                                sortBy === SortOption.FOLLOWERS
+                                            }
+                                        />
+                                        <MobileStat
+                                            label="Repos"
+                                            value={user.public_repos}
+                                            highlighted={
+                                                sortBy === SortOption.REPOS
+                                            }
+                                        />
+                                        <MobileStat
+                                            label="Gists"
+                                            value={user.public_gists}
+                                        />
+                                    </div>
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+
+                {/* Desktop: full table layout */}
+                <div className="overflow-x-auto hidden md:block">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-200/60">
@@ -239,23 +358,6 @@ export const LeaderboardTable = memo(
                                                                 </span>
                                                             </>
                                                         )}
-                                                    </div>
-                                                    <div className="flex items-center gap-3 mt-1.5 sm:hidden">
-                                                        <span
-                                                            className={`text-xs font-medium ${sortBy === SortOption.CONTRIBUTIONS ? "text-apple-blue" : "text-gray-500"}`}
-                                                        >
-                                                            {(
-                                                                user.recent_activity_count ??
-                                                                0
-                                                            ).toLocaleString()}{" "}
-                                                            contributions
-                                                        </span>
-                                                        <span
-                                                            className={`text-xs font-medium ${sortBy === SortOption.FOLLOWERS ? "text-apple-blue" : "text-gray-500"}`}
-                                                        >
-                                                            {user.followers.toLocaleString()}{" "}
-                                                            followers
-                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
