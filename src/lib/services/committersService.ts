@@ -41,6 +41,24 @@ export function toRegionSlug(location: string | null | undefined): string {
     return trimmed.replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
 }
 
+/**
+ * committers.top returns `data_asof` in a non-ISO format
+ * ("2026-06-14 08:16:48 +0000") that V8 parses but stricter engines
+ * (Safari, some mobile browsers) reject as Invalid Date. Normalise it to
+ * ISO-8601 so `new Date(...)` is reliable everywhere downstream.
+ */
+function normalizeDataAsof(value: string | null | undefined): string | null {
+    if (!value) {
+        return null;
+    }
+    const iso = value
+        .trim()
+        .replace(" ", "T")
+        .replace(/\s*([+-]\d{2})(\d{2})$/, "$1:$2");
+    const parsed = new Date(iso);
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
 function escapeRegExp(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -147,7 +165,7 @@ export async function getCommitters(
 
     const list: CommitterList = {
         users,
-        dataAsof: data.data_asof ?? null,
+        dataAsof: normalizeDataAsof(data.data_asof),
     };
 
     cache.set(slug, { list, expires: Date.now() + COMMITTERS_CACHE_TTL_MS });
