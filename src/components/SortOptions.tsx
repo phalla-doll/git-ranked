@@ -7,6 +7,7 @@ interface SortOptionsProps {
 
 export function SortOptions({ sortBy, onSortChange }: SortOptionsProps) {
     const options = [
+        { id: SortOption.CONTRIBUTIONS, label: "Contributions" },
         { id: SortOption.FOLLOWERS, label: "Followers" },
         { id: SortOption.REPOS, label: "Repositories" },
         { id: SortOption.JOINED, label: "Newest" },

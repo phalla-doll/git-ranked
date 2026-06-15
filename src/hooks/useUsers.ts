@@ -10,6 +10,7 @@ interface UsersCache {
     sortBy: SortOption;
     users: GitHubUserDetail[];
     totalCount: number;
+    dataAsof: string | null;
 }
 
 interface SearchResponse {
@@ -19,6 +20,7 @@ interface SearchResponse {
     page_size: number;
     total_pages: number;
     has_more: boolean;
+    data_asof?: string | null;
     error?: string;
     errorType?: string;
 }
@@ -34,6 +36,7 @@ export function useUsers(
     const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [totalCount, setTotalCount] = useState(0);
+    const [dataAsof, setDataAsof] = useState<string | null>(null);
     const [hasMore, setHasMore] = useState(false);
 
     const cacheRef = useRef<UsersCache | null>(null);
@@ -59,9 +62,7 @@ export function useUsers(
                     pageSize: PAGE_SIZE.toString(),
                 });
 
-                const response = await fetch(
-                    `/api/notion/users/search?${params}`,
-                );
+                const response = await fetch(`/api/leaderboard?${params}`);
 
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -82,12 +83,15 @@ export function useUsers(
                 const newUsers = data.users;
 
                 if (isLoadMore) {
-                    setUsers((prev) => [...prev, ...newUsers]);
+                    setUsers((prev) =>
+                        [...prev, ...newUsers].slice(0, MAX_DISPLAY),
+                    );
                 } else {
-                    setUsers(newUsers);
+                    setUsers(newUsers.slice(0, MAX_DISPLAY));
                 }
 
                 setTotalCount(data.total_count);
+                setDataAsof(data.data_asof ?? null);
                 setHasMore(data.has_more);
                 setError(null);
 
@@ -98,6 +102,7 @@ export function useUsers(
                         ? [...(cacheRef.current?.users || []), ...newUsers]
                         : newUsers,
                     totalCount: data.total_count,
+                    dataAsof: data.data_asof ?? null,
                 };
             } catch (err) {
                 console.error(err);
@@ -110,14 +115,15 @@ export function useUsers(
                         err.message.includes("connection") ||
                         err.message.includes("timeout") ||
                         err.message.includes("circuit breaker") ||
-                        err.message.includes("rate limiting")
+                        err.message.includes("rate limiting") ||
+                        err.message.includes("Failed to fetch") ||
+                        err.message.includes("NetworkError")
                     ) {
                         errorMessage =
                             "Network error. Please check your connection and try again.";
-                    } else if (err.message.includes("Notion API")) {
-                        errorMessage =
-                            "Unable to fetch data. Please try again later.";
                     } else {
+                        // The API already returns user-friendly messages for
+                        // data-source / not-found errors; surface them as-is.
                         errorMessage = err.message;
                     }
                 }
@@ -149,6 +155,7 @@ export function useUsers(
         setPage(1);
         setHasMore(false);
         setError(null);
+        setDataAsof(null);
 
         const cached = cacheRef.current;
 
@@ -159,6 +166,7 @@ export function useUsers(
         ) {
             setUsers(cached.users.slice(0, MAX_DISPLAY));
             setTotalCount(cached.totalCount);
+            setDataAsof(cached.dataAsof);
             setPage(Math.ceil(cached.users.length / PAGE_SIZE));
             setHasMore(cached.totalCount > PAGE_SIZE);
             return;
@@ -180,6 +188,7 @@ export function useUsers(
         loadingMore,
         error,
         totalCount,
+        dataAsof,
         hasMore,
         loadMore,
     };

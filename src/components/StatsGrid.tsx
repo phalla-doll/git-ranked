@@ -29,11 +29,16 @@ function getDynamicStats(
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const joinedLast3Months = users.filter(
-        (u) => new Date(u.created_at) >= threeMonthsAgo,
+    const joinedSince = (user: GitHubUserDetail, since: Date): boolean => {
+        const joined = new Date(user.created_at);
+        return !Number.isNaN(joined.getTime()) && joined >= since;
+    };
+
+    const joinedLast3Months = users.filter((u) =>
+        joinedSince(u, threeMonthsAgo),
     ).length;
-    const joinedThisMonth = users.filter(
-        (u) => new Date(u.created_at) >= firstDayOfMonth,
+    const joinedThisMonth = users.filter((u) =>
+        joinedSince(u, firstDayOfMonth),
     ).length;
 
     switch (sortBy) {
