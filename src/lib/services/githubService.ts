@@ -3,6 +3,7 @@ import type { GitHubEvent, GitHubRepository, GitHubUserDetail } from "@/types";
 
 const BASE_URL = "https://api.github.com";
 const GRAPHQL_URL = "https://api.github.com/graphql";
+const LIGHT_USER_BATCH_SIZE = 50;
 
 const calculateCommitsFromEvents = (events: GitHubEvent[]): number => {
     if (!Array.isArray(events)) return 0;
@@ -308,3 +309,167 @@ export const getUserByName = cache(
         }
     },
 );
+
+export interface GitHubLightUser {
+    login: string;
+    id: number | null;
+    avatar_url: string;
+    html_url: string;
+    name: string | null;
+    company: string | null;
+    location: string | null;
+    public_repos: number;
+    public_gists: number;
+    followers: number;
+    following: number;
+    created_at: string | null;
+}
+
+const LIGHT_USER_FIELDS = `
+    login
+    databaseId
+    avatarUrl
+    url
+    name
+    company
+    location
+    createdAt
+    followers { totalCount }
+    following { totalCount }
+    gists(privacy: PUBLIC) { totalCount }
+    repositories(ownerAffiliations: OWNER) { totalCount }
+`;
+
+/**
+ * Posts a query to the GitHub GraphQL API and returns the parsed `data`.
+ * Throws on transport/HTTP failure so callers can surface the error instead
+ * of silently degrading to placeholder data.
+ */
+async function githubGraphQL<T = Record<string, unknown>>(
+    query: string,
+    variables: Record<string, unknown>,
+    apiKey: string,
+): Promise<T> {
+    const response = await fetch(GRAPHQL_URL, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query, variables }),
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            `GitHub GraphQL request failed (${response.status} ${response.statusText})`,
+        );
+    }
+
+    const json = (await response.json()) as {
+        data?: T;
+        errors?: unknown;
+    };
+
+    if (json.errors) {
+        // Field-level errors (e.g. a single unknown login) are expected and
+        // non-fatal — the corresponding alias is simply null in `data`.
+        console.error(
+            "[GitHub GraphQL] field errors:",
+            JSON.stringify(json.errors),
+        );
+    }
+
+    return (json.data ?? {}) as T;
+}
+
+async function fetchLightUserChunk(
+    chunk: string[],
+    apiKey: string,
+    result: Map<string, GitHubLightUser>,
+): Promise<void> {
+    const fieldDefs = chunk
+        .map(
+            (_, i) =>
+                `u${i}: user(login: $l${i}) { ${LIGHT_USER_FIELDS.trim()} }`,
+        )
+        .join("\n");
+    const variableDefs = chunk.map((_, i) => `$l${i}: String!`).join(", ");
+    const variables: Record<string, string> = {};
+    chunk.forEach((login, i) => {
+        variables[`l${i}`] = login;
+    });
+
+    const query = `query(${variableDefs}) {\n${fieldDefs}\n}`;
+
+    const data = await githubGraphQL<Record<string, unknown>>(
+        query,
+        variables,
+        apiKey,
+    );
+
+    for (let i = 0; i < chunk.length; i++) {
+        const requestedLogin = chunk[i];
+        const user = data[`u${i}`] as {
+            login?: string;
+            databaseId?: number;
+            avatarUrl?: string;
+            url?: string;
+            name?: string | null;
+            company?: string | null;
+            location?: string | null;
+            createdAt?: string;
+            followers?: { totalCount?: number };
+            following?: { totalCount?: number };
+            gists?: { totalCount?: number };
+            repositories?: { totalCount?: number };
+        } | null;
+        if (!user) {
+            continue;
+        }
+        // Key by the requested login so callers can look the user up by the
+        // login they passed in, even if GitHub canonicalises case/renames.
+        result.set(requestedLogin, {
+            login: user.login ?? requestedLogin,
+            id: user.databaseId ?? null,
+            avatar_url:
+                user.avatarUrl ?? `https://github.com/${requestedLogin}.png`,
+            html_url: user.url ?? `https://github.com/${requestedLogin}`,
+            name: user.name ?? null,
+            company: user.company ?? null,
+            location: user.location ?? null,
+            public_repos: user.repositories?.totalCount ?? 0,
+            public_gists: user.gists?.totalCount ?? 0,
+            followers: user.followers?.totalCount ?? 0,
+            following: user.following?.totalCount ?? 0,
+            created_at: user.createdAt ?? null,
+        });
+    }
+}
+
+export async function getUsersByLogins(
+    logins: string[],
+    apiKey?: string,
+): Promise<Map<string, GitHubLightUser>> {
+    const result = new Map<string, GitHubLightUser>();
+
+    if (logins.length === 0) {
+        return result;
+    }
+
+    if (!apiKey) {
+        throw new Error("GitHub token is not configured (GITHUB_TOKEN unset)");
+    }
+
+    const chunks: string[][] = [];
+    for (let i = 0; i < logins.length; i += LIGHT_USER_BATCH_SIZE) {
+        chunks.push(logins.slice(i, i + LIGHT_USER_BATCH_SIZE));
+    }
+
+    // Let chunk failures propagate so the route returns an error rather than
+    // silently rendering a slice of users with zeroed-out metrics.
+    await Promise.all(
+        chunks.map((chunk) => fetchLightUserChunk(chunk, apiKey, result)),
+    );
+
+    return result;
+}
