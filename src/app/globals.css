@@ -74,6 +74,32 @@ input,
     display: none;
 }
 
+/* Tabs sliding pill (transitions-dev) — JS writes transform/width/height inline,
+   CSS owns the tween. */
+:root {
+    --tabs-dur: 250ms;
+    --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.t-tabs-pill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    background: var(--apple-surface);
+    border-radius: 0.5rem; /* matches rounded-lg buttons */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* matches shadow-sm */
+    transform: translate(0, 0);
+    transition:
+        transform var(--tabs-dur) var(--tabs-ease),
+        width var(--tabs-dur) var(--tabs-ease),
+        height var(--tabs-dur) var(--tabs-ease);
+    will-change: transform, width, height;
+    z-index: 0;
+    pointer-events: none;
+}
+
 /* Animation utilities */
 @keyframes slide-in-top {
     from {
@@ -97,5 +123,9 @@ input,
 
     .animate-spin {
         animation: none;
+    }
+
+    .t-tabs-pill {
+        transition: none !important;
     }
 }
