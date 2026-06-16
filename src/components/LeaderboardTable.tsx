@@ -6,7 +6,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
-import { memo, useEffect, useRef } from "react";
+import { type CSSProperties, memo, useEffect, useRef } from "react";
 import { analytics } from "@/lib/analytics";
 import type { GitHubUserDetail } from "@/types";
 import { SortOption } from "@/types";
@@ -186,6 +186,12 @@ export const LeaderboardTable = memo(
                                         user.id ||
                                         `user-m-${index}`
                                     }
+                                    className="t-row-reveal"
+                                    style={
+                                        {
+                                            "--row-delay": `${Math.min(index, 8) * 40}ms`,
+                                        } as CSSProperties
+                                    }
                                 >
                                     <button
                                         type="button"
@@ -275,8 +281,8 @@ export const LeaderboardTable = memo(
                 </ul>
 
                 {/* Desktop: full table layout */}
-                <div className="overflow-x-auto hidden md:block">
-                    <table className="w-full text-left border-collapse">
+                <div className="overflow-x-auto overflow-y-clip hidden md:block">
+                    <table className="w-full text-left border-collapse table-fixed">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-200/60">
                                 <th className="px-6 py-4 w-20 text-center text-xs font-normal tracking-wide text-gray-500 uppercase">
@@ -297,7 +303,7 @@ export const LeaderboardTable = memo(
                                 <th className="px-6 py-4 text-right w-32 hidden lg:table-cell  text-xs font-normal tracking-wide text-gray-500 uppercase">
                                     Gists
                                 </th>
-                                <th className="px-6 py-4 w-12"></th>
+                                <th className="px-6 py-4 w-24"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -317,7 +323,12 @@ export const LeaderboardTable = memo(
                                                 `user-${index}`
                                             }
                                             onClick={() => onUserClick(user)}
-                                            className="group hover:bg-blue-50/30 transition-colors duration-200 cursor-pointer"
+                                            className="group t-row-reveal hover:bg-blue-50/30 transition-colors duration-200 cursor-pointer"
+                                            style={
+                                                {
+                                                    "--row-delay": `${Math.min(index, 8) * 40}ms`,
+                                                } as CSSProperties
+                                            }
                                         >
                                             <td className="px-6 py-4 text-center">
                                                 <RankBadge rank={index + 1} />
