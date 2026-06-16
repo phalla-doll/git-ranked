@@ -103,6 +103,33 @@ input,
     pointer-events: none;
 }
 
+/* Staggered row reveal (transitions-dev texts-reveal) — rows rise + un-blur
+   into place. JS sets --row-delay per row (capped) for the stagger. */
+:root {
+    --stagger-dur: 500ms;
+    --stagger-distance: 12px;
+    --stagger-blur: 3px;
+    --stagger-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes row-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(var(--stagger-distance));
+        filter: blur(var(--stagger-blur));
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+.t-row-reveal {
+    animation: row-reveal var(--stagger-dur) var(--stagger-ease) both;
+    animation-delay: var(--row-delay, 0ms);
+}
+
 /* Animation utilities */
 @keyframes slide-in-top {
     from {
@@ -130,5 +157,9 @@ input,
 
     .t-tabs-pill {
         transition: none !important;
+    }
+
+    .t-row-reveal {
+        animation: none !important;
     }
 }
