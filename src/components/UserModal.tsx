@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Calendar01Icon,
     Cancel01Icon,
@@ -9,8 +11,21 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { analytics } from "@/lib/analytics";
 import type { GitHubUserDetail } from "@/types";
+
+// Read the close duration from the --modal-close-dur token so the unmount
+// timer stays in sync with the CSS transition.
+const closeDurationMs = () => {
+    if (typeof window === "undefined") return 150;
+    const v = parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+            "--modal-close-dur",
+        ),
+    );
+    return Number.isFinite(v) ? v : 150;
+};
 
 interface UserModalProps {
     user: GitHubUserDetail | null;
@@ -45,7 +60,47 @@ export const UserModal = ({
     isLoading,
     onClose,
 }: UserModalProps) => {
-    if (!isOpen || !user) return null;
+    // Keep the modal mounted through the close animation, then unmount.
+    const [mounted, setMounted] = useState(false);
+    const [shown, setShown] = useState(false);
+    const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Mount on open; on close, play the exit then unmount after the close dur.
+    useEffect(() => {
+        if (isOpen) {
+            if (closeTimer.current) clearTimeout(closeTimer.current);
+            setMounted(true);
+            return;
+        }
+        setShown(false);
+        closeTimer.current = setTimeout(
+            () => setMounted(false),
+            closeDurationMs(),
+        );
+        return () => {
+            if (closeTimer.current) clearTimeout(closeTimer.current);
+        };
+    }, [isOpen]);
+
+    // Once mounted, flip to the open state on a later frame — after the closed
+    // state has painted — so the entrance actually transitions instead of
+    // snapping straight to open.
+    useEffect(() => {
+        if (!mounted || !isOpen) return;
+        let raf2 = 0;
+        const raf1 = requestAnimationFrame(() => {
+            raf2 = requestAnimationFrame(() => setShown(true));
+        });
+        return () => {
+            cancelAnimationFrame(raf1);
+            cancelAnimationFrame(raf2);
+        };
+    }, [mounted, isOpen]);
+
+    // `user` is retained by the parent during close, so the exit animation
+    // still has content to render.
+    if (!mounted || !user) return null;
+    const stateClass = shown ? "is-open" : "is-closing";
 
     return (
         <div
@@ -56,14 +111,16 @@ export const UserModal = ({
         >
             <button
                 type="button"
-                className="fixed inset-0 z-10 bg-gray-900/20 backdrop-blur-sm transition-opacity animate-in fade-in duration-200 cursor-default"
+                className={`fixed inset-0 z-10 bg-gray-900/20 backdrop-blur-sm cursor-default t-modal-backdrop ${stateClass}`}
                 onClick={onClose}
                 aria-label="Close modal"
             />
 
             <div className="fixed inset-0 z-20 overflow-y-auto pointer-events-none overscroll-contain">
                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                    <div className="relative transform overflow-hidden bg-white rounded-3xl shadow-2xl text-left transition-all sm:my-8 w-full max-w-lg animate-in zoom-in-95 duration-200 pointer-events-auto">
+                    <div
+                        className={`relative overflow-hidden bg-white rounded-3xl shadow-2xl text-left sm:my-8 w-full max-w-lg t-modal ${stateClass}`}
+                    >
                         <div className="relative h-24 bg-linear-to-r from-gray-50 to-white border-b border-gray-100">
                             <button
                                 type="button"
