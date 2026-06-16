@@ -10,7 +10,6 @@ export function SortOptions({ sortBy, onSortChange }: SortOptionsProps) {
         { id: SortOption.CONTRIBUTIONS, label: "Contributions" },
         { id: SortOption.FOLLOWERS, label: "Followers" },
         { id: SortOption.REPOS, label: "Repositories" },
-        { id: SortOption.JOINED, label: "Newest" },
     ] as const;
 
     return (
