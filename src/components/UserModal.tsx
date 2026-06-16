@@ -65,13 +65,12 @@ export const UserModal = ({
     const [shown, setShown] = useState(false);
     const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // Mount on open; on close, play the exit then unmount after the close dur.
     useEffect(() => {
         if (isOpen) {
             if (closeTimer.current) clearTimeout(closeTimer.current);
             setMounted(true);
-            // Flip to the open state on the next frame so the entrance transitions.
-            const raf = requestAnimationFrame(() => setShown(true));
-            return () => cancelAnimationFrame(raf);
+            return;
         }
         setShown(false);
         closeTimer.current = setTimeout(
@@ -82,6 +81,21 @@ export const UserModal = ({
             if (closeTimer.current) clearTimeout(closeTimer.current);
         };
     }, [isOpen]);
+
+    // Once mounted, flip to the open state on a later frame — after the closed
+    // state has painted — so the entrance actually transitions instead of
+    // snapping straight to open.
+    useEffect(() => {
+        if (!mounted || !isOpen) return;
+        let raf2 = 0;
+        const raf1 = requestAnimationFrame(() => {
+            raf2 = requestAnimationFrame(() => setShown(true));
+        });
+        return () => {
+            cancelAnimationFrame(raf1);
+            cancelAnimationFrame(raf2);
+        };
+    }, [mounted, isOpen]);
 
     // `user` is retained by the parent during close, so the exit animation
     // still has content to render.
