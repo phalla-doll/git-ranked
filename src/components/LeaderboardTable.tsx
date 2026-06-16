@@ -276,7 +276,7 @@ export const LeaderboardTable = memo(
 
                 {/* Desktop: full table layout */}
                 <div className="overflow-x-auto hidden md:block">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse table-fixed">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-200/60">
                                 <th className="px-6 py-4 w-20 text-center text-xs font-normal tracking-wide text-gray-500 uppercase">
@@ -297,7 +297,7 @@ export const LeaderboardTable = memo(
                                 <th className="px-6 py-4 text-right w-32 hidden lg:table-cell  text-xs font-normal tracking-wide text-gray-500 uppercase">
                                     Gists
                                 </th>
-                                <th className="px-6 py-4 w-12"></th>
+                                <th className="px-6 py-4 w-24"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">

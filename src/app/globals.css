@@ -36,6 +36,9 @@ body {
 
 html {
     color-scheme: light;
+    /* Reserve scrollbar space so the layout width stays constant whether or not
+       a vertical scrollbar is shown (e.g. loading vs loaded table) — no shift. */
+    scrollbar-gutter: stable;
 }
 
 html.dark {
