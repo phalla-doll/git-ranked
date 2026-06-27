@@ -236,9 +236,13 @@ export const LeaderboardTable = memo(
                                                 </a>
                                             </div>
                                             <span
-                                                className={`shrink-0 text-lg font-semibold tabular-nums leading-none ${rankColorClass(index + 1)}`}
+                                                aria-hidden="true"
+                                                className={`shrink-0 self-start -mt-0.5 text-5xl font-bold tabular-nums leading-none tracking-tight select-none opacity-70 [mask-image:linear-gradient(to_bottom,black_30%,transparent_90%)] ${rankColorClass(index + 1)}`}
                                             >
-                                                #{index + 1}
+                                                {index + 1}
+                                            </span>
+                                            <span className="sr-only">
+                                                Rank {index + 1}
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-4 gap-1 mt-3 rounded-xl bg-gray-50/60 px-2 py-2.5">
