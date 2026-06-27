@@ -193,10 +193,21 @@ export const LeaderboardTable = memo(
                                         } as CSSProperties
                                     }
                                 >
-                                    <button
-                                        type="button"
+                                    {/* biome-ignore lint/a11y/useSemanticElements: a native <button> can't wrap the nested @username <a>, which broke row clicks; this stays keyboard-accessible. */}
+                                    <div
+                                        role="button"
+                                        tabIndex={0}
                                         onClick={() => onUserClick(user)}
-                                        className="group w-full px-4 py-3.5 text-left hover:bg-blue-50/30 transition-colors duration-200"
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === "Enter" ||
+                                                e.key === " "
+                                            ) {
+                                                e.preventDefault();
+                                                onUserClick(user);
+                                            }
+                                        }}
+                                        className="group w-full px-4 py-3.5 text-left hover:bg-blue-50/30 transition-colors duration-200 cursor-pointer"
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className="relative shrink-0">
@@ -277,7 +288,7 @@ export const LeaderboardTable = memo(
                                                 value={user.public_gists}
                                             />
                                         </div>
-                                    </button>
+                                    </div>
                                 </li>
                             );
                         })
