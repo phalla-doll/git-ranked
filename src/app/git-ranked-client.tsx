@@ -150,7 +150,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const displayLocation = location || "Cambodia";
 
     return (
-        <div className="min-h-screen font-sans text-apple-text bg-apple-bg selection:bg-apple-blue selection:text-white pb-20">
+        <div className="min-h-screen font-sans text-apple-text bg-apple-bg selection:bg-apple-blue selection:text-white">
             <PageNavigation
                 userSearchQuery={userSearchQuery}
                 onUserSearchChange={setUserSearchQuery}

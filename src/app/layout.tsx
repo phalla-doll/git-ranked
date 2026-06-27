@@ -8,10 +8,26 @@ const sunghyunSans = localFont({
     variable: "--font-sunghyun",
     display: "swap",
     src: [
-        { path: "./fonts/SunghyunSans-Regular.woff2", weight: "400", style: "normal" },
-        { path: "./fonts/SunghyunSans-Medium.woff2", weight: "500", style: "normal" },
-        { path: "./fonts/SunghyunSans-SemiBold.woff2", weight: "600", style: "normal" },
-        { path: "./fonts/SunghyunSans-Bold.woff2", weight: "700", style: "normal" },
+        {
+            path: "./fonts/SunghyunSans-Regular.woff2",
+            weight: "400",
+            style: "normal",
+        },
+        {
+            path: "./fonts/SunghyunSans-Medium.woff2",
+            weight: "500",
+            style: "normal",
+        },
+        {
+            path: "./fonts/SunghyunSans-SemiBold.woff2",
+            weight: "600",
+            style: "normal",
+        },
+        {
+            path: "./fonts/SunghyunSans-Bold.woff2",
+            weight: "700",
+            style: "normal",
+        },
     ],
 });
 
@@ -95,9 +111,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body
-                className={`${sunghyunSans.variable} antialiased`}
-            >
+            <body className={`${sunghyunSans.variable} antialiased`}>
                 <ThemeProvider>{children}</ThemeProvider>
             </body>
             <GoogleAnalytics gaId="G-NZDXR4KL29" />

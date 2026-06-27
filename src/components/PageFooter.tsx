@@ -1,6 +1,7 @@
 import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import { analytics } from "@/lib/analytics";
 
 interface PageFooterProps {
     location: string;
@@ -81,9 +82,9 @@ export function PageFooter({
                 </div>
             </div>
 
-            {/* <div className="mt-10 pt-6 border-t border-gray-100 text-center">
+            <div className="mt-10 pt-6 border-t border-gray-100 text-center">
                 <p className="text-xs text-gray-500">
-                    Crafted for fun and kept alive by{" "}
+                    Created and maintained by{" "}
                     <a
                         href="https://manthaa.dev/"
                         target="_blank"
@@ -94,7 +95,7 @@ export function PageFooter({
                         Mantha
                     </a>
                 </p>
-            </div> */}
+            </div>
         </footer>
     );
 }
