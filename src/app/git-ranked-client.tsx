@@ -8,6 +8,7 @@ import { PageFooter } from "@/components/PageFooter";
 import { PageNavigation } from "@/components/PageNavigation";
 import { SortOptions } from "@/components/SortOptions";
 import { UserModal } from "@/components/UserModal";
+import { UserSearchDialog } from "@/components/UserSearchDialog";
 import { useUsers } from "@/hooks/useUsers";
 import { analytics } from "@/lib/analytics";
 import type { GitHubUserDetail } from "@/types";
@@ -48,8 +49,9 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
     const [inputValue, setInputValue] = useState(initialLocation);
     const [sortBy, setSortBy] = useState<SortOption>(SortOption.CONTRIBUTIONS);
     const [refreshKey, _setRefreshKey] = useState(0);
-    const [userSearchQuery, setUserSearchQuery] = useState("");
     const [isSearchingUser, setIsSearchingUser] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchError, setSearchError] = useState<string | null>(null);
     const [modalUser, setModalUser] = useState<GitHubUserDetail | null>(null);
     const [modalRank, setModalRank] = useState<number | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,45 +89,54 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
         analytics.locationSearch(sanitized, totalCount);
     }, [inputValue, router, totalCount]);
 
-    const handleUserSearchKeyDown = async (
-        e: React.KeyboardEvent<HTMLInputElement>,
-    ) => {
-        if (e.key === "Enter" && userSearchQuery.trim()) {
-            const searchUsername = userSearchQuery.trim();
-            setIsSearchingUser(true);
-            try {
-                const response = await fetch(
-                    `/api/github/users/${searchUsername}`,
-                );
+    const searchUser = useCallback(async (rawUsername: string) => {
+        const searchUsername = rawUsername.trim();
+        if (!searchUsername) {
+            return;
+        }
+        setSearchError(null);
+        setIsSearchingUser(true);
+        try {
+            const response = await fetch(`/api/github/users/${searchUsername}`);
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || "Failed to fetch user");
-                }
-
-                const user = await response.json();
-
-                if (user) {
-                    analytics.userSearch(searchUsername, true);
-                    setModalUser(user);
-                    setIsModalOpen(true);
-                    modalOpenTimeRef.current = Date.now();
-                    analytics.userModalOpen(searchUsername);
-                    setUserSearchQuery("");
-                } else {
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                if (response.status === 404) {
                     analytics.userSearch(searchUsername, false);
                     analytics.userNotFound(searchUsername);
-                    alert("User not found!");
+                    setSearchError(
+                        `No GitHub user found for “${searchUsername}”.`,
+                    );
+                    return;
                 }
-            } catch (err) {
-                console.error(err);
-                analytics.userSearch(searchUsername, false);
-                alert("Error searching for user.");
-            } finally {
-                setIsSearchingUser(false);
+                throw new Error(errorData.error || "Failed to fetch user");
             }
+
+            const user = await response.json();
+
+            if (user) {
+                analytics.userSearch(searchUsername, true);
+                setModalUser(user);
+                setIsModalOpen(true);
+                modalOpenTimeRef.current = Date.now();
+                analytics.userModalOpen(searchUsername);
+                setSearchError(null);
+                setIsSearchOpen(false);
+            } else {
+                analytics.userSearch(searchUsername, false);
+                analytics.userNotFound(searchUsername);
+                setSearchError(`No GitHub user found for “${searchUsername}”.`);
+            }
+        } catch (err) {
+            console.error(err);
+            analytics.userSearch(searchUsername, false);
+            setSearchError("Something went wrong. Please try again.");
+        } finally {
+            setIsSearchingUser(false);
         }
-    };
+    }, []);
+
+    const clearSearchError = useCallback(() => setSearchError(null), []);
 
     const handleSortChange = useCallback((sort: SortOption) => {
         analytics.sortChange(sort);
@@ -151,11 +162,15 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
 
     return (
         <div className="min-h-screen font-sans text-apple-text bg-apple-bg selection:bg-apple-blue selection:text-white">
-            <PageNavigation
-                userSearchQuery={userSearchQuery}
-                onUserSearchChange={setUserSearchQuery}
-                isSearchingUser={isSearchingUser}
-                onUserSearchKeyDown={handleUserSearchKeyDown}
+            <PageNavigation onOpenSearch={() => setIsSearchOpen(true)} />
+
+            <UserSearchDialog
+                isOpen={isSearchOpen}
+                isSearching={isSearchingUser}
+                error={searchError}
+                onClose={() => setIsSearchOpen(false)}
+                onSubmit={searchUser}
+                onClearError={clearSearchError}
             />
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -289,10 +304,7 @@ export function GitRankedClient({ initialLocation }: GitRankedClientProps) {
 
             <PageFooter
                 location={displayLocation}
-                userSearchQuery={userSearchQuery}
-                onUserSearchChange={setUserSearchQuery}
-                isSearchingUser={isSearchingUser}
-                onUserSearchKeyDown={handleUserSearchKeyDown}
+                onOpenSearch={() => setIsSearchOpen(true)}
             />
         </div>
     );

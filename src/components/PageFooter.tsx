@@ -1,23 +1,14 @@
-import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
+import { Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import { analytics } from "@/lib/analytics";
 
 interface PageFooterProps {
     location: string;
-    userSearchQuery: string;
-    onUserSearchChange: (query: string) => void;
-    isSearchingUser: boolean;
-    onUserSearchKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onOpenSearch: () => void;
 }
 
-export function PageFooter({
-    location,
-    userSearchQuery,
-    onUserSearchChange,
-    isSearchingUser,
-    onUserSearchKeyDown,
-}: PageFooterProps) {
+export function PageFooter({ location, onOpenSearch }: PageFooterProps) {
     return (
         <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-8 border-t border-gray-200">
             <div className="flex flex-col md:flex-row justify-between gap-6">
@@ -51,34 +42,23 @@ export function PageFooter({
                             stats.
                         </p>
                     </div>
-                    <div className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2.5 ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-apple-blue/50 transition-all w-full md:w-64">
+                    <button
+                        type="button"
+                        onClick={onOpenSearch}
+                        className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200/70 rounded-full px-4 py-2.5 ring-1 ring-gray-200 transition-all w-full md:w-64 text-left cursor-pointer"
+                        aria-label="Search for a user"
+                    >
                         <HugeiconsIcon
                             icon={Search01Icon}
                             size={16}
                             color="currentColor"
-                            className="text-gray-400"
+                            className="text-gray-400 shrink-0"
                             strokeWidth={1.5}
                         />
-                        <input
-                            type="text"
-                            placeholder="Find user…"
-                            className="bg-transparent border-none focus:outline-none text-sm w-full text-apple-text placeholder-gray-400 font-medium"
-                            value={userSearchQuery}
-                            onChange={(e) => onUserSearchChange(e.target.value)}
-                            onKeyDown={onUserSearchKeyDown}
-                            disabled={isSearchingUser}
-                            aria-label="Search for a user"
-                        />
-                        {isSearchingUser && (
-                            <HugeiconsIcon
-                                icon={Loading03Icon}
-                                size={22}
-                                color="#2563EB"
-                                className="animate-spin"
-                                strokeWidth={1.5}
-                            />
-                        )}
-                    </div>
+                        <span className="text-sm text-gray-400 font-medium">
+                            Find user…
+                        </span>
+                    </button>
                 </div>
             </div>
 

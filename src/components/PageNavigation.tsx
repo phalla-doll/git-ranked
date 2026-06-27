@@ -1,20 +1,12 @@
-import { Loading03Icon, Search01Icon } from "@hugeicons/core-free-icons";
+import { Search01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 
 interface PageNavigationProps {
-    userSearchQuery: string;
-    onUserSearchChange: (query: string) => void;
-    isSearchingUser: boolean;
-    onUserSearchKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onOpenSearch: () => void;
 }
 
-export function PageNavigation({
-    userSearchQuery,
-    onUserSearchChange,
-    isSearchingUser,
-    onUserSearchKeyDown,
-}: PageNavigationProps) {
+export function PageNavigation({ onOpenSearch }: PageNavigationProps) {
     return (
         <nav className="glass-panel sticky top-0 z-40">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,52 +27,28 @@ export function PageNavigation({
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div className="hidden md:flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-apple-blue/20 transition-all w-64">
+                        <button
+                            type="button"
+                            onClick={onOpenSearch}
+                            className="hidden md:flex items-center gap-2 bg-gray-100 hover:bg-gray-200/70 rounded-full px-4 py-2 transition-all w-64 text-left cursor-pointer"
+                            aria-label="Search for a user"
+                        >
                             <HugeiconsIcon
                                 icon={Search01Icon}
                                 size={16}
                                 color="currentColor"
-                                className="text-gray-400"
+                                className="text-gray-400 shrink-0"
                                 strokeWidth={1.5}
                             />
-                            <input
-                                type="text"
-                                placeholder="Find user…"
-                                className="bg-transparent border-none focus:outline-none text-sm w-full text-apple-text placeholder-gray-400 font-medium"
-                                value={userSearchQuery}
-                                onChange={(e) =>
-                                    onUserSearchChange(e.target.value)
-                                }
-                                onKeyDown={onUserSearchKeyDown}
-                                disabled={isSearchingUser}
-                                aria-label="Search for a user"
-                            />
-                            {isSearchingUser && (
-                                <HugeiconsIcon
-                                    icon={Loading03Icon}
-                                    size={20}
-                                    color="#2563EB"
-                                    className="animate-spin"
-                                    strokeWidth={1.5}
-                                />
-                            )}
-                        </div>
+                            <span className="text-sm text-gray-400 font-medium">
+                                Find user…
+                            </span>
+                        </button>
 
                         <button
                             type="button"
                             className="md:hidden p-2.5 rounded-full transition-all text-gray-500 hover:bg-gray-100 min-h-11 min-w-11 flex items-center justify-center"
-                            onClick={() => {
-                                const query = prompt(
-                                    "Search for a GitHub user:",
-                                );
-                                if (query?.trim()) {
-                                    onUserSearchChange(query.trim());
-                                    onUserSearchKeyDown({
-                                        key: "Enter",
-                                        preventDefault: () => {},
-                                    } as React.KeyboardEvent<HTMLInputElement>);
-                                }
-                            }}
+                            onClick={onOpenSearch}
                             aria-label="Search for a user"
                         >
                             <HugeiconsIcon
