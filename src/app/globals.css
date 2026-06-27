@@ -193,6 +193,21 @@ input,
     animation: slide-in-top 0.2s ease-out;
 }
 
+/* Gentle floating drift for decorative hero artwork */
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0) rotate(-3deg);
+    }
+    50% {
+        transform: translateY(-16px) rotate(3deg);
+    }
+}
+
+.t-float {
+    animation: float 7s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .animate-in {
         animation: none;
@@ -212,6 +227,10 @@ input,
     }
 
     .t-row-reveal {
+        animation: none !important;
+    }
+
+    .t-float {
         animation: none !important;
     }
 }
